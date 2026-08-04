@@ -1,17 +1,31 @@
 """
-PingZero Extreme v2 - Network & System Booster لتقليل اللاق ورفع أداء الألعاب
+PingZero Extreme v3 - Network & System Booster لتقليل اللاق ورفع أداء الألعاب
 ================================================================================
-نسخة مطوّرة من الكود الأصلي: نفس الفكرة، لكن مع نسخ احتياطي حقيقي لأي تغيير
-(بيترجع لطبيعته حتى لو البرنامج قفل فجأة)، إصلاح لعدة باجات كانت بتمنع
-الاستعادة الكاملة، وأرقام حقيقية بدل الوهمية (اختبار بنق قبل/بعد التفعيل).
+نسخة v3: نفس فلسفة v2 تمامًا (نسخ احتياطي حقيقي لأي تغيير - بيترجع لطبيعته حتى
+لو البرنامج قفل فجأة - وأرقام حقيقية بدل الوهمية)، بالإضافة لمجموعة كبيرة من
+التحسينات الجديدة اللي بتستهدف الـ FPS وثبات الفريمات مش بس رقم البنق:
 
-⚠️ حقيقة مهمة: تحسينات الريجستري وكرت الشبكة بتقلل الاحتكاك المحلي (Jitter
-وحمل النظام) لكنها ملهاش تأثير على المسار الفعلي للشبكة بين جهازك وسيرفر
-اللعبة. أدوات زي ExitLag أو LagoFast بتشتغل بمبدأ مختلف: بتمرر اتصالك عبر
-شبكة سيرفراتها هي حول العالم لتلاقي أسرع مسار (Route Optimization) - وده
-محتاج بنية تحتية عالمية فعلية مش حاجة سكريبت محلي يقدر يعملها. البرنامج ده
-بيدّيك أقصى استفادة ممكنة من جهازك وشبكتك، وبيقيس الفرق الحقيقي بدل ما يوعد
-بأرقام.
+جديد في v3:
+  • تعطيل Xbox Game Bar / Game DVR (بيقلل استهلاك خلفي بيأثر على الـ FPS)
+  • تعطيل Fullscreen Optimizations تلقائيًا للعبة المكتشفة (تقليل input lag)
+  • ضبط دقة المؤقت (Timer Resolution) لتحسين ثبات الفريمات (Frame Pacing)
+  • اختيار DNS تلقائيًا بناءً على قياس فعلي (مش افتراض إن Cloudflare الأسرع دايمًا)
+  • (Extreme) سياسة QoS (DSCP) تدي أولوية لحركة اللعبة جوه شبكتك المحلية
+  • (Extreme) تعطيل إدارة الطاقة و Energy Efficient Ethernet لكرت الشبكة بالكامل
+  • زر "ℹ️" في الواجهة يوضح الفرق الحقيقي بين البرنامج وخدمات زي ExitLag/LagoFast
+  • ألعاب إضافية في القائمة
+
+⚠️ حقيقة مهمة (زي ما كانت في v2 بالظبط، ولسه صحيحة 100% مهما طورنا الكود أكتر):
+تحسينات الريجستري وكرت الشبكة ودقة المؤقت وGame DVR بتقلل الاحتكاك المحلي
+(Jitter وحمل النظام) وبتفيد ثبات الـ FPS فعليًا، لكنها ملهاش أي تأثير على
+المسار الفعلي للشبكة بين جهازك وسيرفر اللعبة. أدوات زي ExitLag أو LagoFast أو
+Prime بتشتغل بمبدأ مختلف تمامًا: بتمرر اتصالك عبر شبكة سيرفراتها هي المنتشرة
+حول العالم لتلاقي أسرع مسار (Route Optimization) - وده محتاج بنية تحتية عالمية
+فعلية (سيرفرات مستأجرة في مناطق كتير) مش حاجة سكريبت محلي شغال على جهازك يقدر
+يعملها مهما "طورناه". أي نسخة من الكود ده تدّعي إنها بتعمل Route Optimization
+من غير سيرفرات فعلية بتشتغل عليها بتكون بتوعد بحاجة مش حقيقية عمدًا. البرنامج
+ده بيدّيك أقصى استفادة ممكنة من جهازك وشبكتك المحلية، وبيقيس الفرق الحقيقي بدل
+ما يوعد بأرقام وهمية.
 
 المتطلبات: تشغيل كأدمن (Run as Administrator) + pip install psutil
 """
@@ -21,6 +35,7 @@ from tkinter import ttk, messagebox, scrolledtext
 import subprocess, os, sys, ctypes, threading, time, socket, re, atexit, winreg, psutil, json, statistics
 from ctypes import wintypes
 from collections import deque
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
 from queue import Queue, Empty
@@ -28,9 +43,17 @@ from queue import Queue, Empty
 # ============================================================
 # إعدادات عامة
 # ============================================================
-APP_TITLE = "PingZero Extreme v2 – Network & System Booster"
+APP_TITLE = "PingZero Extreme v3 – Network, System & FPS Booster"
 BACKUP_DIR = Path(os.environ.get("LOCALAPPDATA", os.path.expanduser("~"))) / "PingZeroExtreme"
 BACKUP_FILE = BACKUP_DIR / "session_backup.json"
+FSE_LAYER_PATH = r"Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
+
+DNS_CANDIDATES = [
+    ("Cloudflare", "1.1.1.1", "1.0.0.1"),
+    ("Google", "8.8.8.8", "8.8.4.4"),
+    ("Quad9", "9.9.9.9", "149.112.112.112"),
+    ("OpenDNS", "208.67.222.222", "208.67.220.220"),
+]
 
 GAME_PROFILES = {
     "Fortnite": {"host": "fortnite.akamaized.net", "port": 443,
@@ -53,6 +76,14 @@ GAME_PROFILES = {
             "exe": ["cs2.exe"]},
     "PUBG": {"host": "pubg.com", "port": 443,
              "exe": ["TslGame.exe", "PUBG.exe"]},
+    "Overwatch 2": {"host": "battle.net", "port": 443,
+                     "exe": ["Overwatch.exe"]},
+    "Dota 2": {"host": "dota2.com", "port": 443,
+               "exe": ["dota2.exe"]},
+    "GTA Online": {"host": "socialclub.rockstargames.com", "port": 443,
+                    "exe": ["GTA5.exe", "PlayGTAV.exe"]},
+    "Destiny 2": {"host": "bungie.net", "port": 443,
+                   "exe": ["destiny2.exe"]},
 }
 
 
@@ -102,6 +133,38 @@ def get_active_adapters():
     على أي نظام غير عربي)."""
     res = run_ps("(Get-NetAdapter | Where-Object {$_.Status -eq 'Up'}).Name")
     return [l.strip() for l in res.stdout.splitlines() if l.strip()]
+
+
+def measure_tcp_latency(ip, port=53, timeout=0.7):
+    """قياس زمن اتصال TCP تقريبي - نفس فكرة tcp_ping بتاعت التطبيق لكن معمم
+    لأي IP/بورت، مستخدم هنا لقياس استجابة خوادم DNS فعليًا."""
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(timeout)
+    try:
+        start = time.perf_counter()
+        sock.connect((ip, port))
+        sock.shutdown(socket.SHUT_RDWR)
+        return (time.perf_counter() - start) * 1000
+    except Exception:
+        return None
+    finally:
+        sock.close()
+
+
+def pick_fastest_dns():
+    """يرجع قائمة (name, primary, secondary, ms) مرتبة من الأسرع للأبطأ، بناءً
+    على قياس فعلي بالتوازي (مش افتراض). أي خادم فشل في الاتصال بيتجاهل."""
+    def probe(entry):
+        name, primary, secondary = entry
+        samples = [t for t in (measure_tcp_latency(primary) for _ in range(3)) if t is not None]
+        if samples:
+            return (name, primary, secondary, round(statistics.median(samples), 1))
+        return None
+
+    with ThreadPoolExecutor(max_workers=len(DNS_CANDIDATES)) as pool:
+        results = [r for r in pool.map(probe, DNS_CANDIDATES) if r is not None]
+    results.sort(key=lambda r: r[3])
+    return results
 
 
 def find_gpu_registry_keys():
@@ -178,9 +241,8 @@ def _enable_privilege(name):
 def clear_standby_list():
     """
     تفريغ Standby List لصفحات الذاكرة عبر NtSetSystemInformation - نفس
-    الأسلوب الداخلي لأدوات زي RAMMap/EmptyStandbyList. الكود الأصلي كان
-    بينادي أمر PowerShell اسمه Clear-StandbyList، وهو مش cmdlet حقيقي
-    أصلاً. دي نسخة شغالة فعليًا، وبترجع False بهدوء لو فشلت.
+    الأسلوب الداخلي لأدوات زي RAMMap/EmptyStandbyList. بترجع False بهدوء
+    لو فشلت (مش كل الأجهزة بتدعمها).
     """
     try:
         if not _enable_privilege("SeProfileSingleProcessPrivilege"):
@@ -210,7 +272,7 @@ def require_admin():
 class SessionBackup:
     def __init__(self, logger=print):
         self.log = logger
-        self.data = {"registry": [], "adapters": [], "services": [], "power_plan": None}
+        self.data = {"registry": [], "adapters": [], "services": [], "power_plan": None, "qos_policies": []}
         try:
             BACKUP_DIR.mkdir(parents=True, exist_ok=True)
         except Exception:
@@ -224,20 +286,22 @@ class SessionBackup:
             pass
 
     # ---------- ريجستري ----------
-    def set_dword(self, hive_name, path, name, new_value):
+    def set_dword(self, hive_name, path, name, new_value, value_type=winreg.REG_DWORD):
+        """اسم الميثود فضل set_dword للتوافق مع باقي الكود، لكنه بقى عام دلوقتي
+        وبيقبل أي نوع قيمة (REG_DWORD الافتراضي، أو REG_SZ.. الخ) عبر value_type."""
         hive = {"HKLM": winreg.HKEY_LOCAL_MACHINE, "HKCU": winreg.HKEY_CURRENT_USER}[hive_name]
         try:
             key = winreg.OpenKey(hive, path, 0, winreg.KEY_SET_VALUE | winreg.KEY_QUERY_VALUE)
         except FileNotFoundError:
             key = winreg.CreateKey(hive, path)
-        existed, old_value, old_type = True, None, winreg.REG_DWORD
+        existed, old_value, old_type = True, None, value_type
         try:
             old_value, old_type = winreg.QueryValueEx(key, name)
         except FileNotFoundError:
             existed = False
         self.data["registry"].append({"hive": hive_name, "path": path, "name": name,
                                        "existed": existed, "value": old_value, "type": old_type})
-        winreg.SetValueEx(key, name, 0, winreg.REG_DWORD, new_value)
+        winreg.SetValueEx(key, name, 0, value_type, new_value)
         winreg.CloseKey(key)
         self._persist()
 
@@ -288,6 +352,27 @@ class SessionBackup:
             self.data["power_plan"] = guid
             self._persist()
 
+    # ---------- QoS ----------
+    def add_qos_policy(self, name, exe_name):
+        """بينشئ سياسة QoS (DSCP=46, Expedited Forwarding) لحركة exe معينة.
+        بيتحقق فعليًا إن السياسة اتعملت (مش بس إن الأمر مرجعش خطأ) لأن بعض
+        نسخ ويندوز (خصوصًا Home) ممكن تتجاهل الأمر بهدوء. بيرجع True/False
+        حقيقي، وبيسجل الاسم للـ backup بس لو فعلاً نجح."""
+        run_ps(f"Remove-NetQosPolicy -Name {ps_quote(name)} -PolicyStore ActiveStore "
+               f"-Confirm:$false -ErrorAction SilentlyContinue | Out-Null")
+        script = (
+            f"New-NetQosPolicy -Name {ps_quote(name)} -AppPathNameMatchCondition {ps_quote(exe_name)} "
+            f"-DSCPAction 46 -NetworkProfile All -PolicyStore ActiveStore -ErrorAction SilentlyContinue | Out-Null\n"
+            f"if (Get-NetQosPolicy -Name {ps_quote(name)} -PolicyStore ActiveStore -ErrorAction SilentlyContinue) "
+            f"{{ Write-Output 'QOS_OK' }} else {{ Write-Output 'QOS_FAIL' }}"
+        )
+        res = run_ps(script)
+        ok = "QOS_OK" in res.stdout
+        if ok:
+            self.data["qos_policies"].append(name)
+            self._persist()
+        return ok
+
     # ---------- الاستعادة الكاملة ----------
     def restore_all(self):
         for item in reversed(self.data["registry"]):
@@ -308,13 +393,20 @@ class SessionBackup:
         for ad, items in by_adapter.items():
             lines = [f"$ad = {ps_quote(ad)}",
                      "Enable-NetAdapterLso -Name $ad -ErrorAction SilentlyContinue",
-                     "Enable-NetAdapterChecksumOffload -Name $ad -ErrorAction SilentlyContinue"]
+                     "Enable-NetAdapterChecksumOffload -Name $ad -ErrorAction SilentlyContinue",
+                     "Enable-NetAdapterPowerManagement -Name $ad -ErrorAction SilentlyContinue"]
             for prop, val in items:
                 lines.append(f"Set-NetAdapterAdvancedProperty -Name $ad -DisplayName {ps_quote(prop)} "
                               f"-DisplayValue {ps_quote(val)} -ErrorAction SilentlyContinue")
             run_ps("\n".join(lines))
         if by_adapter:
-            self.log("🔄 تم استرجاع إعدادات كرت/كروت الشبكة الأصلية")
+            self.log("🔄 تم استرجاع إعدادات كرت/كروت الشبكة الأصلية (بما فيها إدارة الطاقة)")
+
+        for policy in self.data.get("qos_policies", []):
+            run_ps(f"Remove-NetQosPolicy -Name {ps_quote(policy)} -PolicyStore ActiveStore "
+                   f"-Confirm:$false -ErrorAction SilentlyContinue | Out-Null")
+        if self.data.get("qos_policies"):
+            self.log(f"🌐 تم إلغاء {len(self.data['qos_policies'])} سياسة QoS")
 
         for svc in self.data["services"]:
             run(f"sc start {svc}")
@@ -331,7 +423,7 @@ class SessionBackup:
 
         self.log("🔄 تم إرجاع DNS وTCP لوضعهم الطبيعي")
 
-        self.data = {"registry": [], "adapters": [], "services": [], "power_plan": None}
+        self.data = {"registry": [], "adapters": [], "services": [], "power_plan": None, "qos_policies": []}
         try:
             if BACKUP_FILE.exists():
                 BACKUP_FILE.unlink()
@@ -383,6 +475,12 @@ class PingZeroExtreme:
         self.backup = SessionBackup(logger=self.log)
         self.original_power_plan = self.get_current_power_plan()
 
+        # --- v3: تتبع إضافي لتحسينات الـ FPS/QoS ---
+        self._timer_resolution_active = False
+        self.tweaked_pids = set()
+        self.qos_policy_created = False
+        self.qos_policy_name = ""
+
         self.init_ui()
         self._drain_log_queue()
         self.setup_safe_restore()
@@ -413,18 +511,24 @@ class PingZeroExtreme:
                 self.root.update()
             except Exception:
                 pass
-            try:
-                self.backup.restore_all()
-            except Exception:
-                pass
+            self.full_restore()
         self.root.destroy()
 
     def emergency_restore(self):
         try:
             if self.is_boosted:
-                self.backup.restore_all()
+                self.full_restore()
         except Exception:
             pass
+
+    def full_restore(self):
+        """يجمع كل مسارات الاستعادة (ريجستري/شبكة/خدمات/QoS) + دقة المؤقت
+        في نداء واحد، عشان أي حالة إغلاق (عادي/كراش/طوارئ) تستخدم نفس المسار."""
+        try:
+            self.backup.restore_all()
+        except Exception:
+            pass
+        self.restore_timer_resolution()
 
     # ==================== واجهة Tkinter ====================
     def init_ui(self):
@@ -437,8 +541,10 @@ class PingZeroExtreme:
         self.logo.pack(side='right', padx=5)
         tk.Label(hdr, text="PingZero Extreme", font=("Segoe UI", 20, "bold"),
                  bg='#05050F', fg='white').pack(side='right', padx=10)
-        tk.Label(hdr, text="Local Tweaks · Real Metrics · Safe Restore",
+        tk.Label(hdr, text="Local Tweaks · Real Metrics · FPS Boost · Safe Restore",
                  font=("Segoe UI", 9), bg='#05050F', fg='#9CA3AF').pack(side='right')
+        tk.Button(hdr, text="ℹ️ إحنا وExitLag", font=("Segoe UI", 9), bg='#111122', fg='white',
+                  relief='flat', cursor='hand2', command=self.show_real_difference_info).pack(side='left', padx=5)
 
         body = tk.Frame(main, bg='#05050F')
         body.pack(fill='both', expand=True, pady=10)
@@ -485,8 +591,10 @@ class PingZeroExtreme:
         tk.Radiobutton(mrow, text="Extreme (أقصى قوة)", variable=self.mode_var, value="extreme",
                        bg='#111122', fg='white', selectcolor='#1E1E3A', font=("Segoe UI", 10),
                        activebackground='#111122').pack(side='right', padx=5)
-        tk.Label(f2, text="Extreme بيوقف تحديثات ويندوز وBITS وSpooler مؤقتًا، ويثبّت المعالج\n"
-                          "على أقصى سرعة طول الوقت - أقوى، بس استهلاك كهرباء/حرارة أعلى (خصوصًا لابتوب).",
+        tk.Label(f2, text="Extreme بيوقف تحديثات ويندوز وBITS وSpooler مؤقتًا، ويثبّت المعالج على أقصى\n"
+                          "سرعة طول الوقت، وبيضيف سياسة QoS وتعطيل كامل لإدارة الطاقة بكرت الشبكة -\n"
+                          "أقوى، بس استهلاك كهرباء/حرارة أعلى (خصوصًا لابتوب). كل الأوضاع بتشمل تعطيل\n"
+                          "Game DVR وFullscreen Optimizations وضبط دقة المؤقت لتحسين ثبات الـ FPS.",
                  font=("Segoe UI", 8), bg='#111122', fg='#9CA3AF', wraplength=340, justify='right').pack(anchor='e', padx=12, pady=(0, 10))
 
         self.btn_boost = tk.Button(parent, text="⚡ بدء التسريع الأقصى", font=("Segoe UI", 15, "bold"),
@@ -575,6 +683,22 @@ class PingZeroExtreme:
             self.root.after(500, lambda: cycle(i + 1))
         cycle()
 
+    def show_real_difference_info(self):
+        messagebox.showinfo(
+            "الفرق الحقيقي بيننا وبين ExitLag / LagoFast / Prime",
+            "أدوات زي ExitLag وLagoFast وPrime بتشتغل بتمرير اتصالك عبر شبكة سيرفرات\n"
+            "خاصة بيهم منتشرة حول العالم، عشان تلاقي مسار إنترنت أسرع من اللي بيحدده\n"
+            "مزود الإنترنت بتاعك افتراضيًا (Route Optimization). ده محتاج بنية تحتية\n"
+            "فعلية (سيرفرات مستأجرة عالميًا) - مش حاجة أي برنامج على جهازك بمفرده\n"
+            "يقدر يعملها.\n\n"
+            "البرنامج ده بيشتغل بمبدأ مختلف: بيحسّن جهازك وشبكتك المحلية لأقصى درجة\n"
+            "(TCP، كرت الشبكة، أولويات المعالج، الذاكرة، Game DVR، دقة المؤقت..)،\n"
+            "وده بيقلل التلعثم (Jitter) والحمل اللي سببه جهازك فعليًا، لكنه مش بيغيّر\n"
+            "المسار الفعلي للإنترنت. لو الـ Ping الأساسي عندك متأثر بمسار الشبكة\n"
+            "نفسه، الحل الحقيقي الوحيد هو خدمة زي دي أو VPN خاص بيك على سيرفرات\n"
+            "قريبة من سيرفر اللعبة."
+        )
+
     # ==================== تحسينات الشبكة ====================
     def extreme_tcp_optimizations(self):
         try:
@@ -617,16 +741,32 @@ class PingZeroExtreme:
             "RSS Load Balancing Profile": "ClosestProcessor",
             "Maximum Number of RSS Queues": "4",
         }
+        if self.extreme_mode:
+            props["Energy Efficient Ethernet"] = "Disabled"
+            props["Green Ethernet"] = "Disabled"
+            props["Power Saving Mode"] = "Disabled"
         self.backup.apply_adapter_props(adapters, props, extreme=self.extreme_mode)
+        if self.extreme_mode:
+            for ad in adapters:
+                run_ps(f"Disable-NetAdapterPowerManagement -Name {ps_quote(ad)} -ErrorAction SilentlyContinue")
+            self.log("🔋 تم تعطيل إدارة الطاقة لكرت/كروت الشبكة (Extreme)")
         self.log(f"⚡ تم تحسين {len(adapters)} كرت شبكة (مع حفظ القيم الأصلية للاستعادة)")
 
     def set_fastest_dns(self):
+        self.log("🌐 قياس زمن الاستجابة لأشهر خوادم DNS لاختيار الأسرع فعليًا...")
+        results = pick_fastest_dns()
         adapters = get_active_adapters()
+        if results:
+            for r_name, r_primary, r_secondary, r_ms in results:
+                self.log(f"   • {r_name}: {r_ms} ms")
+            chosen_name, primary, secondary, _ = results[0]
+        else:
+            chosen_name, primary, secondary = "Cloudflare (افتراضي - تعذر القياس)", "1.1.1.1", "1.0.0.1"
         for ad in adapters:
-            run(f'netsh interface ip set dns "{ad}" static 1.1.1.1')
-            run(f'netsh interface ip add dns "{ad}" 1.0.0.1 index=2')
+            run(f'netsh interface ip set dns "{ad}" static {primary}')
+            run(f'netsh interface ip add dns "{ad}" {secondary} index=2')
         run("ipconfig /flushdns")
-        self.log("🌐 تم ضبط DNS Cloudflare (1.1.1.1) ومسح الكاش")
+        self.log(f"🌐 تم اختيار {chosen_name} كأسرع DNS ({primary}) وتطبيقه ومسح الكاش")
 
     # ==================== تحسينات النظام ====================
     def ultimate_performance_plan(self):
@@ -664,7 +804,42 @@ class PingZeroExtreme:
             else:
                 self.log(f"ℹ️ {svc} واقفة مسبقًا أو مش متاحة")
 
-    def set_game_high_priority(self):
+    def disable_game_dvr_overlay(self):
+        try:
+            self.backup.set_dword("HKCU", r"System\GameConfigStore", "GameDVR_Enabled", 0)
+            self.backup.set_dword("HKCU", r"System\GameConfigStore", "GameDVR_FSEBehaviorMode", 2)
+            self.backup.set_dword("HKCU", r"System\GameConfigStore", "GameDVR_HonorUserFSEBehaviorMode", 1)
+            self.backup.set_dword("HKLM", r"SOFTWARE\Policies\Microsoft\Windows\GameDVR", "AllowGameDVR", 0)
+            self.backup.set_dword("HKCU", r"Software\Microsoft\Windows\CurrentVersion\GameDVR",
+                                   "AppCaptureEnabled", 0)
+            self.log("🎮 تم تعطيل Xbox Game Bar / Game DVR (تقليل استهلاك خلفي وتحسين ثبات الـ FPS)")
+        except Exception as e:
+            self.log(f"⚠️ خطأ في تعطيل Game DVR: {e}")
+
+    def enable_high_timer_resolution(self):
+        try:
+            result = ctypes.WinDLL("winmm").timeBeginPeriod(1)
+            if result == 0:
+                self._timer_resolution_active = True
+                self.log("⏱️ تم ضبط دقة المؤقت (Timer Resolution) على 1ms لتحسين ثبات الفريمات")
+            else:
+                self.log("ℹ️ تعذر ضبط دقة المؤقت على هذا الجهاز")
+        except Exception as e:
+            self.log(f"⚠️ خطأ في ضبط دقة المؤقت: {e}")
+
+    def restore_timer_resolution(self):
+        if self._timer_resolution_active:
+            try:
+                ctypes.WinDLL("winmm").timeEndPeriod(1)
+                self.log("⏱️ تم إرجاع دقة المؤقت لوضعها الطبيعي")
+            except Exception:
+                pass
+            self._timer_resolution_active = False
+
+    def apply_per_process_tweaks(self):
+        """بتجمع رفع الأولوية + تعطيل Fullscreen Optimizations + سياسة QoS
+        لعمليات اللعبة الشغالة دلوقتي. بتتنادى فورًا بعد التفعيل وكل شوية
+        من monitoring_loop عشان تمسك اللعبة حتى لو اتقفلت وفُتحت تاني."""
         targets = set()
         if self.target_game in GAME_PROFILES:
             targets.update(GAME_PROFILES[self.target_game]["exe"])
@@ -674,15 +849,49 @@ class PingZeroExtreme:
             return
         boosted = 0
         for proc in psutil.process_iter(['pid', 'name']):
-            if proc.info['name'] in targets:
+            name = proc.info.get('name')
+            if name not in targets:
+                continue
+            pid = proc.info['pid']
+            p = None
+            try:
+                p = psutil.Process(pid)
+                p.nice(psutil.HIGH_PRIORITY_CLASS)
+                p.ionice(psutil.IOPRIO_HIGH)
+                p.cpu_affinity(list(range(os.cpu_count())))
+                boosted += 1
+            except Exception:
+                pass
+
+            if pid in self.tweaked_pids:
+                continue
+            self.tweaked_pids.add(pid)
+
+            try:
+                full_path = (p or psutil.Process(pid)).exe()
+                existing = ""
                 try:
-                    p = psutil.Process(proc.info['pid'])
-                    p.nice(psutil.HIGH_PRIORITY_CLASS)
-                    p.ionice(psutil.IOPRIO_HIGH)
-                    p.cpu_affinity(list(range(os.cpu_count())))
-                    boosted += 1
+                    key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, FSE_LAYER_PATH, 0, winreg.KEY_QUERY_VALUE)
+                    existing, _ = winreg.QueryValueEx(key, full_path)
+                    winreg.CloseKey(key)
                 except Exception:
-                    pass
+                    existing = ""
+                flag = "DISABLEDXMAXIMIZEDWINDOWEDMODE"
+                if flag not in existing:
+                    new_value = (existing + " " + flag).strip() if existing else "~ " + flag
+                    self.backup.set_dword("HKCU", FSE_LAYER_PATH, full_path, new_value, winreg.REG_SZ)
+                    self.log(f"🖥️ تم تعطيل Fullscreen Optimizations لـ {name}")
+            except Exception:
+                pass
+
+            if self.extreme_mode and not self.qos_policy_created:
+                if self.backup.add_qos_policy(self.qos_policy_name, name):
+                    self.log(f"🌐 تم إنشاء سياسة QoS (DSCP) لحركة {name} - بتساعد أساسًا لو في أجهزة "
+                              "تانية بتزاحم شبكتك المحلية")
+                else:
+                    self.log("ℹ️ سياسات QoS مش مدعومة على نسخة ويندوز دي - تم تجاوزها بأمان")
+                self.qos_policy_created = True
+
         if boosted:
             self.log(f"⬆️ تم رفع أولوية {boosted} عملية متعلقة باللعبة (CPU+I/O+Affinity)")
 
@@ -736,7 +945,7 @@ class PingZeroExtreme:
                 self.root.after(0, self.update_ui, ping, loss, cpu)
             tick += 1
             if tick % 5 == 0:
-                self.set_game_high_priority()
+                self.apply_per_process_tweaks()
             time.sleep(1)
 
     def update_ui(self, ping, loss, cpu):
@@ -787,9 +996,14 @@ class PingZeroExtreme:
         self.extreme_mode = (self.mode_var.get() == "extreme")
         self.custom_exe_name = self.custom_exe_var.get().strip()
         mode_txt = "Extreme (أقصى قوة)" if self.extreme_mode else "آمن"
-        details = "• TCP وDNS وكرت الشبكة\n• خطة الطاقة Ultimate Performance\n• أولوية اللعبة في المعالج"
+        details = ("• TCP وDNS (بعد قياس الأسرع فعليًا) وكرت الشبكة\n"
+                   "• خطة الطاقة Ultimate Performance وأولوية اللعبة في المعالج\n"
+                   "• تعطيل Xbox Game Bar/Game DVR وFullscreen Optimizations للعبتك\n"
+                   "• ضبط دقة المؤقت (Timer Resolution) لتحسين ثبات الفريمات")
         if self.extreme_mode:
-            details += "\n• إيقاف مؤقت لتحديثات ويندوز وBITS وSpooler\n• تثبيت المعالج على أقصى سرعة دايمًا"
+            details += ("\n• إيقاف مؤقت لتحديثات ويندوز وBITS وSpooler\n"
+                        "• تثبيت المعالج على أقصى سرعة دايمًا\n"
+                        "• سياسة QoS + تعطيل إدارة الطاقة لكرت الشبكة بالكامل")
         if not messagebox.askyesno(
                 "تأكيد",
                 f"هيتم تطبيق وضع: {mode_txt}\n\nالتغييرات:\n{details}\n\n"
@@ -805,6 +1019,9 @@ class PingZeroExtreme:
         def worker():
             self.log(f"⚙️ بدء سلسلة التحسينات ({mode_txt})...")
             self.backup.note_power_plan(self.original_power_plan)
+            self.tweaked_pids = set()
+            self.qos_policy_created = False
+            self.qos_policy_name = f"PingZero_{game}"
             self.baseline_ping = self.measure_baseline()
             if self.baseline_ping is not None:
                 self.log(f"📏 متوسط البنق قبل التفعيل: {self.baseline_ping} ms")
@@ -816,7 +1033,9 @@ class PingZeroExtreme:
             self.memory_and_io_boost()
             self.disable_unnecessary_services()
             self.gpu_latency_tweaks()
-            self.set_game_high_priority()
+            self.disable_game_dvr_overlay()
+            self.enable_high_timer_resolution()
+            self.apply_per_process_tweaks()
 
             psutil.cpu_percent(interval=None)
             self.is_boosted = True
@@ -840,6 +1059,8 @@ class PingZeroExtreme:
         else:
             self.log(f"📊 المقارنة: قبل {self.baseline_ping}ms ← بعد {after}ms - شبه ثابت. "
                       f"الفايدة هنا أساسًا في تقليل التلعثم (Jitter) مش رقم البنق نفسه")
+        self.log("🎮 تحسينات الـ FPS (Game DVR، Fullscreen Optimizations، دقة المؤقت) بتأثيرها على "
+                  "ثبات الفريم مش على رقم الـ Ping، فمتقلقش لو مش شايفها في المقارنة دي")
 
     def on_boost_started(self):
         self.btn_boost.config(text="⏹ إيقاف التسريع", state='normal', bg='#EF4444', activebackground='#DC2626')
@@ -853,7 +1074,7 @@ class PingZeroExtreme:
         self.btn_boost.config(state='disabled')
 
         def worker():
-            self.backup.restore_all()
+            self.full_restore()
             self.root.after(0, self.on_boost_stopped)
 
         threading.Thread(target=worker, daemon=True).start()
