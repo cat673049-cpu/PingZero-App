@@ -1,37 +1,44 @@
 """
-PingZero Extreme v3 - Network & System Booster لتقليل اللاق ورفع أداء الألعاب
+PingZero Extreme v4 - Network & System Booster لتقليل اللاق ورفع أداء الألعاب
 ================================================================================
-نسخة v3: نفس فلسفة v2 تمامًا (نسخ احتياطي حقيقي لأي تغيير - بيترجع لطبيعته حتى
-لو البرنامج قفل فجأة - وأرقام حقيقية بدل الوهمية)، بالإضافة لمجموعة كبيرة من
-التحسينات الجديدة اللي بتستهدف الـ FPS وثبات الفريمات مش بس رقم البنق:
+نسخة v4: نفس فلسفة v2/v3 تمامًا (نسخ احتياطي حقيقي لأي تغيير - بيترجع لطبيعته حتى
+لو البرنامج قفل فجأة - وأرقام حقيقية بدل الوهمية)، مع واجهة معاد تصميمها بالكامل
++ مجموعة تحسينات إضافية حقيقية تستهدف ثبات الفريمات تحديدًا:
 
-جديد في v3:
-  • تعطيل Xbox Game Bar / Game DVR (بيقلل استهلاك خلفي بيأثر على الـ FPS)
-  • تعطيل Fullscreen Optimizations تلقائيًا للعبة المكتشفة (تقليل input lag)
-  • ضبط دقة المؤقت (Timer Resolution) لتحسين ثبات الفريمات (Frame Pacing)
-  • اختيار DNS تلقائيًا بناءً على قياس فعلي (مش افتراض إن Cloudflare الأسرع دايمًا)
-  • (Extreme) سياسة QoS (DSCP) تدي أولوية لحركة اللعبة جوه شبكتك المحلية
-  • (Extreme) تعطيل إدارة الطاقة و Energy Efficient Ethernet لكرت الشبكة بالكامل
-  • زر "ℹ️" في الواجهة يوضح الفرق الحقيقي بين البرنامج وخدمات زي ExitLag/LagoFast
-  • ألعاب إضافية في القائمة
+جديد في v4:
+  • واجهة معاد تصميمها بالكامل: كروت متسقة، تبديل وضع (Safe/Extreme) بشكل أنيق
+    بديل الـ Radiobutton الافتراضي، حوارات تأكيد/معلومات مصممة بنفس ثيم البرنامج
+    بديل messagebox الافتراضي، رسم بياني بخطوط شبكة مرجعية وتعبئة تحت المنحنى
+    ونقطة توضح آخر قراءة، بطاقة استهلاك الذاكرة (RAM) جنب باقي القياسات الحقيقية،
+    ثيم غامق موحّد حتى على الـ Combobox.
+  • جدولة MMCSS لمهام الألعاب (GPU Priority / Scheduling Category / SFIO
+    Priority) + SystemResponsiveness=0: نفس الآلية اللي ويندوز نفسه بيستخدمها
+    عشان يدي الأولوية الفورية لمعالجة الرسوميات/الصوت بدل ما تستنى دورها زي أي
+    Thread عادي، وده بيقلل الـ micro-stutter فعليًا (تقنية موثقة من مايكروسوفت،
+    مش اختراع).
+  • (Extreme) تعطيل Core Parking بالكامل: كل أنوية المعالج تفضل شغالة بدل ما
+    تتنيّم وتحتاج وقت تصحى فجأة لحظة ما اللعبة تحتاجها.
 
-⚠️ حقيقة مهمة (زي ما كانت في v2 بالظبط، ولسه صحيحة 100% مهما طورنا الكود أكتر):
-تحسينات الريجستري وكرت الشبكة ودقة المؤقت وGame DVR بتقلل الاحتكاك المحلي
-(Jitter وحمل النظام) وبتفيد ثبات الـ FPS فعليًا، لكنها ملهاش أي تأثير على
-المسار الفعلي للشبكة بين جهازك وسيرفر اللعبة. أدوات زي ExitLag أو LagoFast أو
-Prime بتشتغل بمبدأ مختلف تمامًا: بتمرر اتصالك عبر شبكة سيرفراتها هي المنتشرة
-حول العالم لتلاقي أسرع مسار (Route Optimization) - وده محتاج بنية تحتية عالمية
-فعلية (سيرفرات مستأجرة في مناطق كتير) مش حاجة سكريبت محلي شغال على جهازك يقدر
-يعملها مهما "طورناه". أي نسخة من الكود ده تدّعي إنها بتعمل Route Optimization
-من غير سيرفرات فعلية بتشتغل عليها بتكون بتوعد بحاجة مش حقيقية عمدًا. البرنامج
-ده بيدّيك أقصى استفادة ممكنة من جهازك وشبكتك المحلية، وبيقيس الفرق الحقيقي بدل
-ما يوعد بأرقام وهمية.
+⚠️ حقيقة مهمة (زي ما كانت في v2 وv3 بالظبط، ولسه صحيحة 100% مهما طورنا الواجهة
+أو التحسينات المحلية أكتر - وده بالظبط سبب إن الإصدار ده لسه من غير "تحسين مسار
+الشبكة" زي ExitLag/LagoFast):
+تحسينات الريجستري وكرت الشبكة ودقة المؤقت وGame DVR وMMCSS بتقلل الاحتكاك المحلي
+(Jitter وحمل النظام) وبتفيد ثبات الـ FPS فعليًا، لكنها ملهاش أي تأثير على المسار
+الفعلي للشبكة بين جهازك وسيرفر اللعبة. أدوات زي ExitLag أو LagoFast أو Prime -
+حتى في الباقة المدفوعة (Premium) بتاعتهم - بتشتغل بمبدأ مختلف تمامًا: بتمرر
+اتصالك عبر شبكة سيرفراتها هي المنتشرة حول العالم لتلاقي أسرع مسار (Route
+Optimization)، وده محتاج بنية تحتية عالمية فعلية (سيرفرات مستأجرة في مناطق كتير
++ اشتراك استضافة شهري) مش حاجة سكريبت محلي شغال على جهازك يقدر يعملها مهما
+"طورناه" أو حتى لو سمّيناه "Premium". أي نسخة من الكود ده تدّعي إنها بتعمل Route
+Optimization من غير سيرفرات فعلية بتشتغل عليها بتكون بتوعد بحاجة مش حقيقية عمدًا،
+وده اللي البرنامج ده مصمم إنه ميعملوش. البرنامج ده بيدّيك أقصى استفادة ممكنة من
+جهازك وشبكتك المحلية، وبيقيس الفرق الحقيقي بدل ما يوعد بأرقام وهمية.
 
 المتطلبات: تشغيل كأدمن (Run as Administrator) + pip install psutil
 """
 
 import tkinter as tk
-from tkinter import ttk, messagebox, scrolledtext
+from tkinter import ttk, scrolledtext
 import subprocess, os, sys, ctypes, threading, time, socket, re, atexit, winreg, psutil, json, statistics
 from ctypes import wintypes
 from collections import deque
@@ -43,10 +50,28 @@ from queue import Queue, Empty
 # ============================================================
 # إعدادات عامة
 # ============================================================
-APP_TITLE = "PingZero Extreme v3 – Network, System & FPS Booster"
+APP_TITLE = "PingZero Extreme v4 – Network, System & FPS Booster"
 BACKUP_DIR = Path(os.environ.get("LOCALAPPDATA", os.path.expanduser("~"))) / "PingZeroExtreme"
 BACKUP_FILE = BACKUP_DIR / "session_backup.json"
 FSE_LAYER_PATH = r"Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
+
+# نظام ألوان موحّد - عشان أي تعديل شكل مستقبلي يبقى مكان واحد بس
+COLORS = {
+    "bg": "#05050F",
+    "card": "#111122",
+    "card_alt": "#161628",
+    "border": "#2D2D5E",
+    "accent": "#8B5CF6",
+    "accent_hover": "#7C3AED",
+    "accent_soft": "#1E1E3A",
+    "text": "#FFFFFF",
+    "text_dim": "#9CA3AF",
+    "text_faint": "#54546E",
+    "green": "#10B981",
+    "amber": "#F59E0B",
+    "red": "#EF4444",
+    "blue": "#60A5FA",
+}
 
 DNS_CANDIDATES = [
     ("Cloudflare", "1.1.1.1", "1.0.0.1"),
@@ -112,10 +137,7 @@ def ps_quote(s):
 
 
 def run_ps(script, timeout=25):
-    """
-    تشغيل PowerShell بدون shell=True (الكود الأصلي كان بيمرر list مع
-    shell=True مع بعض، وده سلوكه غير مضمون على ويندوز).
-    """
+    """تشغيل PowerShell بدون shell=True."""
     try:
         return subprocess.run(
             ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", script],
@@ -128,16 +150,13 @@ def run_ps(script, timeout=25):
 
 
 def get_active_adapters():
-    """أسماء كروت الشبكة المتصلة - عبر Get-NetAdapter عشان يشتغل على أي
-    لغة ويندوز (الكود الأصلي كان بيدور على كلمة 'متصل' نصيًا وده بيفشل
-    على أي نظام غير عربي)."""
+    """أسماء كروت الشبكة المتصلة - عبر Get-NetAdapter عشان يشتغل على أي لغة ويندوز."""
     res = run_ps("(Get-NetAdapter | Where-Object {$_.Status -eq 'Up'}).Name")
     return [l.strip() for l in res.stdout.splitlines() if l.strip()]
 
 
 def measure_tcp_latency(ip, port=53, timeout=0.7):
-    """قياس زمن اتصال TCP تقريبي - نفس فكرة tcp_ping بتاعت التطبيق لكن معمم
-    لأي IP/بورت، مستخدم هنا لقياس استجابة خوادم DNS فعليًا."""
+    """قياس زمن اتصال TCP تقريبي لأي IP/بورت، مستخدم هنا لقياس استجابة خوادم DNS فعليًا."""
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(timeout)
     try:
@@ -152,8 +171,7 @@ def measure_tcp_latency(ip, port=53, timeout=0.7):
 
 
 def pick_fastest_dns():
-    """يرجع قائمة (name, primary, secondary, ms) مرتبة من الأسرع للأبطأ، بناءً
-    على قياس فعلي بالتوازي (مش افتراض). أي خادم فشل في الاتصال بيتجاهل."""
+    """يرجع قائمة (name, primary, secondary, ms) مرتبة من الأسرع للأبطأ، بناءً على قياس فعلي بالتوازي."""
     def probe(entry):
         name, primary, secondary = entry
         samples = [t for t in (measure_tcp_latency(primary) for _ in range(3)) if t is not None]
@@ -168,8 +186,7 @@ def pick_fastest_dns():
 
 
 def find_gpu_registry_keys():
-    """يحدد المزوّد الحقيقي (NVIDIA/AMD/Intel) لكل كرت شاشة عبر DriverDesc،
-    بدل ما نكتب قيم NVIDIA و AMD على نفس المفتاح زي ما كان بيحصل قبل كده."""
+    """يحدد المزوّد الحقيقي (NVIDIA/AMD/Intel) لكل كرت شاشة عبر DriverDesc."""
     base = r"SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}"
     found = []
     try:
@@ -239,11 +256,7 @@ def _enable_privilege(name):
 
 
 def clear_standby_list():
-    """
-    تفريغ Standby List لصفحات الذاكرة عبر NtSetSystemInformation - نفس
-    الأسلوب الداخلي لأدوات زي RAMMap/EmptyStandbyList. بترجع False بهدوء
-    لو فشلت (مش كل الأجهزة بتدعمها).
-    """
+    """تفريغ Standby List لصفحات الذاكرة عبر NtSetSystemInformation."""
     try:
         if not _enable_privilege("SeProfileSingleProcessPrivilege"):
             return False
@@ -263,6 +276,75 @@ def require_admin():
         ctypes.windll.user32.MessageBoxW(
             0, "يجب تشغيل البرنامج كمسؤول (Run as Administrator)!", "خطأ", 0x10)
         sys.exit(0)
+
+
+# ============================================================
+# حوارات مخصصة بنفس ثيم البرنامج - بديل messagebox الافتراضي اللي شكله
+# مكسور عن باقي التطبيق
+# ============================================================
+class StyledDialog(tk.Toplevel):
+    def __init__(self, parent, title, message, kind="info"):
+        super().__init__(parent)
+        self.result = False
+        self.title(title)
+        self.configure(bg=COLORS["bg"])
+        self.resizable(False, False)
+        self.transient(parent)
+
+        wrap = tk.Frame(self, bg=COLORS["bg"], padx=28, pady=22,
+                         highlightbackground=COLORS["border"], highlightthickness=1)
+        wrap.pack()
+
+        icon = "⚠️" if kind == "confirm" else "ℹ️"
+        tk.Label(wrap, text=icon, font=("Segoe UI", 26), bg=COLORS["bg"], fg=COLORS["accent"]).pack(pady=(0, 8))
+        tk.Label(wrap, text=title, font=("Segoe UI", 13, "bold"), bg=COLORS["bg"], fg="white",
+                 wraplength=420, justify='center').pack()
+        tk.Label(wrap, text=message, font=("Segoe UI", 10), bg=COLORS["bg"], fg=COLORS["text_dim"],
+                 wraplength=420, justify='right').pack(pady=(10, 20))
+
+        btns = tk.Frame(wrap, bg=COLORS["bg"])
+        btns.pack(fill="x")
+        if kind == "confirm":
+            tk.Button(btns, text="إلغاء", font=("Segoe UI", 10), bg=COLORS["accent_soft"], fg="white",
+                      relief="flat", cursor="hand2", padx=18, pady=8,
+                      command=self._cancel).pack(side="left")
+            tk.Button(btns, text="تأكيد", font=("Segoe UI", 10, "bold"), bg=COLORS["accent"], fg="white",
+                      relief="flat", cursor="hand2", padx=18, pady=8,
+                      command=self._confirm).pack(side="right")
+        else:
+            tk.Button(btns, text="تمام", font=("Segoe UI", 10, "bold"), bg=COLORS["accent"], fg="white",
+                      relief="flat", cursor="hand2", padx=24, pady=8,
+                      command=self._confirm).pack(side="right")
+
+        self.protocol("WM_DELETE_WINDOW", self._cancel)
+        self.update_idletasks()
+        try:
+            x = parent.winfo_x() + (parent.winfo_width() - self.winfo_width()) // 2
+            y = parent.winfo_y() + (parent.winfo_height() - self.winfo_height()) // 2
+            self.geometry(f"+{max(x, 0)}+{max(y, 0)}")
+        except Exception:
+            pass
+        self.grab_set()
+        self.focus_set()
+
+    def _confirm(self):
+        self.result = True
+        self.destroy()
+
+    def _cancel(self):
+        self.result = False
+        self.destroy()
+
+
+def ask_confirm(parent, title, message):
+    d = StyledDialog(parent, title, message, kind="confirm")
+    parent.wait_window(d)
+    return d.result
+
+
+def show_info(parent, title, message):
+    d = StyledDialog(parent, title, message, kind="info")
+    parent.wait_window(d)
 
 
 # ============================================================
@@ -287,8 +369,7 @@ class SessionBackup:
 
     # ---------- ريجستري ----------
     def set_dword(self, hive_name, path, name, new_value, value_type=winreg.REG_DWORD):
-        """اسم الميثود فضل set_dword للتوافق مع باقي الكود، لكنه بقى عام دلوقتي
-        وبيقبل أي نوع قيمة (REG_DWORD الافتراضي، أو REG_SZ.. الخ) عبر value_type."""
+        """بيقبل أي نوع قيمة (REG_DWORD الافتراضي، أو REG_SZ.. الخ) عبر value_type."""
         hive = {"HKLM": winreg.HKEY_LOCAL_MACHINE, "HKCU": winreg.HKEY_CURRENT_USER}[hive_name]
         try:
             key = winreg.OpenKey(hive, path, 0, winreg.KEY_SET_VALUE | winreg.KEY_QUERY_VALUE)
@@ -354,10 +435,8 @@ class SessionBackup:
 
     # ---------- QoS ----------
     def add_qos_policy(self, name, exe_name):
-        """بينشئ سياسة QoS (DSCP=46, Expedited Forwarding) لحركة exe معينة.
-        بيتحقق فعليًا إن السياسة اتعملت (مش بس إن الأمر مرجعش خطأ) لأن بعض
-        نسخ ويندوز (خصوصًا Home) ممكن تتجاهل الأمر بهدوء. بيرجع True/False
-        حقيقي، وبيسجل الاسم للـ backup بس لو فعلاً نجح."""
+        """بينشئ سياسة QoS (DSCP=46, Expedited Forwarding) لحركة exe معينة. بيتحقق
+        فعليًا إن السياسة اتعملت (مش بس إن الأمر مرجعش خطأ)."""
         run_ps(f"Remove-NetQosPolicy -Name {ps_quote(name)} -PolicyStore ActiveStore "
                f"-Confirm:$false -ErrorAction SilentlyContinue | Out-Null")
         script = (
@@ -419,7 +498,7 @@ class SessionBackup:
 
         if self.data.get("power_plan"):
             run(f"powercfg /setactive {self.data['power_plan']}")
-            self.log("⚡ تم إرجاع خطة الطاقة الأصلية")
+            self.log("⚡ تم إرجاع خطة الطاقة الأصلية (بما فيها إعدادات Core Parking)")
 
         self.log("🔄 تم إرجاع DNS وTCP لوضعهم الطبيعي")
 
@@ -458,8 +537,8 @@ class PingZeroExtreme:
     def __init__(self, root):
         self.root = root
         self.root.title(APP_TITLE)
-        self.root.geometry("940x800")
-        self.root.configure(bg="#05050F")
+        self.root.geometry("960x820")
+        self.root.configure(bg=COLORS["bg"])
         self.root.resizable(False, False)
 
         self.is_boosted = False
@@ -475,7 +554,7 @@ class PingZeroExtreme:
         self.backup = SessionBackup(logger=self.log)
         self.original_power_plan = self.get_current_power_plan()
 
-        # --- v3: تتبع إضافي لتحسينات الـ FPS/QoS ---
+        # --- تتبع إضافي لتحسينات الـ FPS/QoS ---
         self._timer_resolution_active = False
         self.tweaked_pids = set()
         self.qos_policy_created = False
@@ -484,6 +563,7 @@ class PingZeroExtreme:
         self.init_ui()
         self._drain_log_queue()
         self.setup_safe_restore()
+        self.root.update()  # يضمن إن الشباك اتحدد مكانها قبل أي حوار مخصص
         self.check_pending_backup()
         self.animate()
         self.on_game_change()
@@ -491,12 +571,9 @@ class PingZeroExtreme:
     # ==================== الأمان ====================
     def check_pending_backup(self):
         if SessionBackup.has_pending():
-            answer = messagebox.askyesno(
-                "استعادة جلسة سابقة",
-                "لاحظنا إن البرنامج قفل قبل كده من غير ما يرجّع إعدادات النظام "
-                "لوضعها الطبيعي (كراش أو إغلاق قسري). عايز نرجّعها دلوقتي؟"
-            )
-            if answer:
+            if ask_confirm(self.root, "استعادة جلسة سابقة",
+                            "لاحظنا إن البرنامج قفل قبل كده من غير ما يرجّع إعدادات النظام "
+                            "لوضعها الطبيعي (كراش أو إغلاق قسري). عايز نرجّعها دلوقتي؟"):
                 SessionBackup.restore_pending(logger=self.log)
 
     def setup_safe_restore(self):
@@ -522,8 +599,7 @@ class PingZeroExtreme:
             pass
 
     def full_restore(self):
-        """يجمع كل مسارات الاستعادة (ريجستري/شبكة/خدمات/QoS) + دقة المؤقت
-        في نداء واحد، عشان أي حالة إغلاق (عادي/كراش/طوارئ) تستخدم نفس المسار."""
+        """يجمع كل مسارات الاستعادة (ريجستري/شبكة/خدمات/QoS) + دقة المؤقت في نداء واحد."""
         try:
             self.backup.restore_all()
         except Exception:
@@ -532,114 +608,186 @@ class PingZeroExtreme:
 
     # ==================== واجهة Tkinter ====================
     def init_ui(self):
-        main = tk.Frame(self.root, bg='#05050F')
+        self._setup_ttk_style()
+
+        main = tk.Frame(self.root, bg=COLORS["bg"])
         main.pack(fill='both', expand=True, padx=15, pady=15)
 
-        hdr = tk.Frame(main, bg='#05050F')
+        hdr = tk.Frame(main, bg=COLORS["bg"])
         hdr.pack(fill='x')
-        self.logo = tk.Label(hdr, text="⚡", font=("Segoe UI", 28), bg='#05050F', fg='#8B5CF6')
+        brand = tk.Frame(hdr, bg=COLORS["bg"])
+        brand.pack(side='right')
+        self.logo = tk.Label(brand, text="⚡", font=("Segoe UI", 28), bg=COLORS["bg"], fg=COLORS["accent"])
         self.logo.pack(side='right', padx=5)
-        tk.Label(hdr, text="PingZero Extreme", font=("Segoe UI", 20, "bold"),
-                 bg='#05050F', fg='white').pack(side='right', padx=10)
-        tk.Label(hdr, text="Local Tweaks · Real Metrics · FPS Boost · Safe Restore",
-                 font=("Segoe UI", 9), bg='#05050F', fg='#9CA3AF').pack(side='right')
-        tk.Button(hdr, text="ℹ️ إحنا وExitLag", font=("Segoe UI", 9), bg='#111122', fg='white',
+        title_box = tk.Frame(brand, bg=COLORS["bg"])
+        title_box.pack(side='right', padx=6)
+        name_row = tk.Frame(title_box, bg=COLORS["bg"])
+        name_row.pack(anchor='e')
+        tk.Label(name_row, text="PingZero Extreme", font=("Segoe UI", 20, "bold"),
+                 bg=COLORS["bg"], fg="white").pack(side='right')
+        tk.Label(name_row, text=" v4", font=("Segoe UI", 11, "bold"),
+                 bg=COLORS["bg"], fg=COLORS["accent"]).pack(side='right')
+        tk.Label(title_box, text="Local Tweaks · Real Metrics · FPS Boost · Safe Restore",
+                 font=("Segoe UI", 9), bg=COLORS["bg"], fg=COLORS["text_dim"]).pack(anchor='e')
+        tk.Button(hdr, text="ℹ️ إحنا وExitLag/LagoFast", font=("Segoe UI", 9), bg=COLORS["card"], fg='white',
                   relief='flat', cursor='hand2', command=self.show_real_difference_info).pack(side='left', padx=5)
 
-        body = tk.Frame(main, bg='#05050F')
+        body = tk.Frame(main, bg=COLORS["bg"])
         body.pack(fill='both', expand=True, pady=10)
 
-        ctrl = tk.Frame(body, bg='#05050F')
+        ctrl = tk.Frame(body, bg=COLORS["bg"])
         ctrl.pack(side='right', fill='both', expand=True, padx=(5, 0))
         self.build_controls(ctrl)
 
-        left = tk.Frame(body, bg='#05050F', width=380)
+        left = tk.Frame(body, bg=COLORS["bg"], width=380)
         left.pack(side='left', fill='y', padx=(0, 5))
         left.pack_propagate(False)
         self.build_monitoring(left)
 
-    def build_controls(self, parent):
-        f1 = tk.Frame(parent, bg='#111122', highlightbackground='#2D2D5E', highlightthickness=1)
-        f1.pack(fill='x', pady=5)
-        tk.Label(f1, text="🎮 اللعبة", font=("Segoe UI", 12, "bold"), bg='#111122', fg='white').pack(anchor='e', padx=12, pady=(10, 2))
+    def _setup_ttk_style(self):
+        """ثيم الـ ttk (الـ Combobox أساسًا) عشان يبقى غامق زي باقي البرنامج بدل
+        الشكل الفاتح الافتراضي اللي كان بيبوّظ الانسجام البصري."""
+        style = ttk.Style()
+        try:
+            style.theme_use('clam')
+        except Exception:
+            pass
+        style.configure("Dark.TCombobox",
+                        fieldbackground=COLORS["accent_soft"],
+                        background=COLORS["accent_soft"],
+                        foreground="white",
+                        arrowcolor="white",
+                        bordercolor=COLORS["border"],
+                        selectbackground=COLORS["accent_soft"],
+                        selectforeground="white")
+        style.map("Dark.TCombobox",
+                  fieldbackground=[('readonly', COLORS["accent_soft"])],
+                  foreground=[('readonly', 'white')])
+        self.root.option_add('*TCombobox*Listbox.background', COLORS["accent_soft"])
+        self.root.option_add('*TCombobox*Listbox.foreground', 'white')
+        self.root.option_add('*TCombobox*Listbox.selectBackground', COLORS["accent"])
+        self.root.option_add('*TCombobox*Listbox.selectForeground', 'white')
 
-        row = tk.Frame(f1, bg='#111122')
+    def _card(self, parent, **kwargs):
+        f = tk.Frame(parent, bg=COLORS["card"], highlightbackground=COLORS["border"], highlightthickness=1)
+        pack_opts = {"fill": "x", "pady": 5}
+        pack_opts.update(kwargs)
+        f.pack(**pack_opts)
+        return f
+
+    def _section_title(self, parent, text):
+        tk.Label(parent, text=text, font=("Segoe UI", 12, "bold"), bg=COLORS["card"],
+                 fg="white").pack(anchor='e', padx=12, pady=(10, 2))
+
+    def build_controls(self, parent):
+        f1 = self._card(parent)
+        self._section_title(f1, "🎮 اللعبة")
+
+        row = tk.Frame(f1, bg=COLORS["card"])
         row.pack(fill='x', padx=12, pady=(0, 6))
         self.game_var = tk.StringVar(value="Fortnite")
         combo = ttk.Combobox(row, textvariable=self.game_var, values=list(GAME_PROFILES.keys()),
-                              state="readonly", font=("Segoe UI", 11))
+                              state="readonly", font=("Segoe UI", 11), style="Dark.TCombobox")
         combo.pack(side='right', fill='x', expand=True)
         self.game_var.trace('w', lambda *a: self.on_game_change())
-        tk.Button(row, text="🔍 اكتشاف تلقائي", font=("Segoe UI", 9), bg='#2D2D5E', fg='white',
+        tk.Button(row, text="🔍 اكتشاف تلقائي", font=("Segoe UI", 9), bg=COLORS["accent_soft"], fg='white',
                   relief='flat', cursor='hand2', command=self.detect_running_game).pack(side='left', padx=(6, 0))
 
         tk.Label(f1, text="اسم exe يدوي (اختياري لو لعبتك مش في القائمة)",
-                 font=("Segoe UI", 8), bg='#111122', fg='#9CA3AF').pack(anchor='e', padx=12)
+                 font=("Segoe UI", 8), bg=COLORS["card"], fg=COLORS["text_dim"]).pack(anchor='e', padx=12)
         self.custom_exe_var = tk.StringVar()
         tk.Entry(f1, textvariable=self.custom_exe_var, font=("Segoe UI", 10), justify='right',
-                 bg='#1E1E3A', fg='white', insertbackground='white', relief='flat').pack(fill='x', padx=12, pady=(2, 10))
+                 bg=COLORS["accent_soft"], fg='white', insertbackground='white',
+                 relief='flat').pack(fill='x', padx=12, pady=(2, 10))
 
-        f2 = tk.Frame(parent, bg='#111122', highlightbackground='#2D2D5E', highlightthickness=1)
-        f2.pack(fill='x', pady=5)
-        tk.Label(f2, text="⚙️ وضع التشغيل", font=("Segoe UI", 12, "bold"), bg='#111122', fg='white').pack(anchor='e', padx=12, pady=(10, 2))
+        f2 = self._card(parent)
+        self._section_title(f2, "⚙️ وضع التشغيل")
+
+        toggle_row = tk.Frame(f2, bg=COLORS["accent_soft"])
+        toggle_row.pack(fill='x', padx=12, pady=(0, 6))
         self.mode_var = tk.StringVar(value="safe")
-        mrow = tk.Frame(f2, bg='#111122')
-        mrow.pack(fill='x', padx=12, pady=(0, 4))
-        tk.Radiobutton(mrow, text="آمن (موصى به)", variable=self.mode_var, value="safe",
-                       bg='#111122', fg='white', selectcolor='#1E1E3A', font=("Segoe UI", 10),
-                       activebackground='#111122').pack(side='right', padx=5)
-        tk.Radiobutton(mrow, text="Extreme (أقصى قوة)", variable=self.mode_var, value="extreme",
-                       bg='#111122', fg='white', selectcolor='#1E1E3A', font=("Segoe UI", 10),
-                       activebackground='#111122').pack(side='right', padx=5)
-        tk.Label(f2, text="Extreme بيوقف تحديثات ويندوز وBITS وSpooler مؤقتًا، ويثبّت المعالج على أقصى\n"
-                          "سرعة طول الوقت، وبيضيف سياسة QoS وتعطيل كامل لإدارة الطاقة بكرت الشبكة -\n"
-                          "أقوى، بس استهلاك كهرباء/حرارة أعلى (خصوصًا لابتوب). كل الأوضاع بتشمل تعطيل\n"
-                          "Game DVR وFullscreen Optimizations وضبط دقة المؤقت لتحسين ثبات الـ FPS.",
-                 font=("Segoe UI", 8), bg='#111122', fg='#9CA3AF', wraplength=340, justify='right').pack(anchor='e', padx=12, pady=(0, 10))
+        self.mode_buttons = {}
+
+        def set_mode(m):
+            self.mode_var.set(m)
+            for key, btn in self.mode_buttons.items():
+                selected = key == m
+                btn.config(bg=COLORS["accent"] if selected else COLORS["accent_soft"],
+                           fg="white" if selected else COLORS["text_dim"])
+
+        for key, label in [("safe", "آمن (موصى به)"), ("extreme", "Extreme ⚡")]:
+            b = tk.Button(toggle_row, text=label, font=("Segoe UI", 10, "bold"), relief='flat', bd=0,
+                          cursor='hand2', activebackground=COLORS["accent_hover"],
+                          command=lambda k=key: set_mode(k))
+            b.pack(side='right', fill='x', expand=True, padx=2, pady=4)
+            self.mode_buttons[key] = b
+        set_mode("safe")
+
+        tk.Label(f2, text="Extreme بيوقف تحديثات ويندوز وBITS وSpooler مؤقتًا، يثبّت المعالج على أقصى سرعة\n"
+                          "طول الوقت، يعطّل Core Parking بالكامل، ويضيف QoS + تعطيل تام لإدارة الطاقة بكرت\n"
+                          "الشبكة - أقوى، بس استهلاك كهرباء/حرارة أعلى (خصوصًا لابتوب). كل الأوضاع بتشمل\n"
+                          "جدولة MMCSS للألعاب، تعطيل Game DVR وFullscreen Optimizations، وضبط دقة المؤقت.",
+                 font=("Segoe UI", 8), bg=COLORS["card"], fg=COLORS["text_dim"],
+                 wraplength=340, justify='right').pack(anchor='e', padx=12, pady=(0, 10))
 
         self.btn_boost = tk.Button(parent, text="⚡ بدء التسريع الأقصى", font=("Segoe UI", 15, "bold"),
-                                    bg='#8B5CF6', fg='white', activebackground='#7C3AED',
+                                    bg=COLORS["accent"], fg='white', activebackground=COLORS["accent_hover"],
                                     relief='flat', cursor='hand2', command=self.toggle_boost, padx=20, pady=12)
         self.btn_boost.pack(fill='x', padx=5, pady=10)
-        self.btn_boost.bind('<Enter>', lambda e: self.btn_boost.config(bg='#7C3AED') if not self.is_boosted else None)
-        self.btn_boost.bind('<Leave>', lambda e: self.btn_boost.config(bg='#8B5CF6' if not self.is_boosted else '#EF4444'))
+        self.btn_boost.bind('<Enter>', lambda e: self.btn_boost.config(bg=COLORS["accent_hover"]) if not self.is_boosted else None)
+        self.btn_boost.bind('<Leave>', lambda e: self.btn_boost.config(bg=COLORS["accent"] if not self.is_boosted else '#EF4444'))
 
+        status_row = tk.Frame(parent, bg=COLORS["bg"])
+        status_row.pack(fill='x', padx=12, pady=5)
+        self.status_dot = tk.Canvas(status_row, width=10, height=10, bg=COLORS["bg"], highlightthickness=0)
+        self.status_dot.pack(side='right', padx=(0, 6), pady=3)
+        self._dot_id = self.status_dot.create_oval(1, 1, 9, 9, fill=COLORS["text_faint"], outline="")
         self.status_var = tk.StringVar(value="جاهز – اختر اللعبة ثم اضغط بدء")
-        tk.Label(parent, textvariable=self.status_var, font=("Segoe UI", 10),
-                 bg='#05050F', fg='#9CA3AF', wraplength=350, justify='right').pack(anchor='e', padx=12, pady=5)
+        tk.Label(status_row, textvariable=self.status_var, font=("Segoe UI", 10),
+                 bg=COLORS["bg"], fg=COLORS["text_dim"], wraplength=310, justify='right').pack(side='right')
 
     def build_monitoring(self, parent):
-        g = tk.Frame(parent, bg='#111122', highlightbackground='#2D2D5E', highlightthickness=1)
-        g.pack(fill='x', pady=5)
-        tk.Label(g, text="📈 Ping Live Graph", font=("Segoe UI", 11, "bold"), bg='#111122', fg='white').pack(anchor='e', padx=12, pady=(10, 2))
-        self.graph = tk.Canvas(g, bg='#1E1E3A', height=120, highlightthickness=0)
+        g = self._card(parent)
+        self._section_title(g, "📈 Ping Live Graph")
+        self.graph = tk.Canvas(g, bg=COLORS["accent_soft"], height=120, highlightthickness=0)
         self.graph.pack(fill='x', padx=12, pady=(0, 10))
 
-        s = tk.Frame(parent, bg='#111122', highlightbackground='#2D2D5E', highlightthickness=1)
-        s.pack(fill='x', pady=5)
-        tk.Label(s, text="📊 إحصائيات حقيقية", font=("Segoe UI", 11, "bold"), bg='#111122', fg='white').pack(anchor='e', padx=12, pady=(10, 2))
+        s = self._card(parent)
+        self._section_title(s, "📊 إحصائيات حقيقية")
 
-        rows = [
-            ("Ping", "ms", "#8B5CF6"),
-            ("Jitter", "ms", "#10B981"),
-            ("Packet Loss", "%", "#10B981"),
-            ("Avg Ping", "ms", "#F59E0B"),
-            ("حمل المعالج", "%", "#60A5FA"),
+        tiles = tk.Frame(s, bg=COLORS["card"])
+        tiles.pack(fill='x', padx=12, pady=(0, 10))
+        tiles.grid_columnconfigure(0, weight=1)
+        tiles.grid_columnconfigure(1, weight=1)
+
+        stat_defs = [
+            ("Ping", "ms", COLORS["accent"], "📶"),
+            ("Jitter", "ms", COLORS["green"], "🎯"),
+            ("Packet Loss", "%", COLORS["green"], "📉"),
+            ("Avg Ping", "ms", COLORS["amber"], "📊"),
+            ("حمل المعالج", "%", COLORS["blue"], "🧠"),
+            ("الذاكرة", "%", COLORS["blue"], "💾"),
         ]
         self.stat_labels = {}
-        for title, unit, color in rows:
-            f = tk.Frame(s, bg='#111122')
-            f.pack(fill='x', padx=12, pady=2)
-            val = tk.Label(f, text=f"-- {unit}", font=("Segoe UI", 14, "bold"), bg='#111122', fg=color)
-            val.pack(side='left')
-            tk.Label(f, text=title, font=("Segoe UI", 10), bg='#111122', fg='#9CA3AF').pack(side='left', padx=5)
+        for i, (title, unit, color, icon) in enumerate(stat_defs):
+            r, c = divmod(i, 2)
+            tile = tk.Frame(tiles, bg=COLORS["card_alt"], highlightbackground=COLORS["border"],
+                             highlightthickness=1)
+            tile.grid(row=r, column=c, sticky='nsew', padx=4, pady=4)
+            top = tk.Frame(tile, bg=COLORS["card_alt"])
+            top.pack(fill='x', padx=10, pady=(8, 0))
+            tk.Label(top, text=icon, font=("Segoe UI", 11), bg=COLORS["card_alt"], fg=color).pack(side='right')
+            val = tk.Label(tile, text=f"-- {unit}", font=("Segoe UI", 15, "bold"), bg=COLORS["card_alt"], fg=color)
+            val.pack(anchor='e', padx=10)
+            tk.Label(tile, text=title, font=("Segoe UI", 9), bg=COLORS["card_alt"],
+                     fg=COLORS["text_dim"]).pack(anchor='e', padx=10, pady=(0, 8))
             self.stat_labels[title] = val
 
-        lf = tk.Frame(parent, bg='#111122', highlightbackground='#2D2D5E', highlightthickness=1)
-        lf.pack(fill='both', expand=True, pady=5)
-        tk.Label(lf, text="📝 سجل العمليات", font=("Segoe UI", 11, "bold"), bg='#111122', fg='white').pack(anchor='e', padx=12, pady=(10, 2))
+        lf = self._card(parent, fill='both', expand=True)
+        self._section_title(lf, "📝 سجل العمليات")
         self.log_box = scrolledtext.ScrolledText(lf, wrap='word', font=("Consolas", 9),
-                                                   bg='#1E1E3A', fg='#9CA3AF', insertbackground='white',
+                                                   bg=COLORS["accent_soft"], fg=COLORS["text_dim"],
+                                                   insertbackground='white',
                                                    relief='flat', height=10, state='disabled')
         self.log_box.pack(fill='both', expand=True, padx=12, pady=(0, 10))
 
@@ -677,27 +825,33 @@ class PingZeroExtreme:
         self.log("🔍 مفيش لعبة من القائمة شغالة حاليًا")
 
     def animate(self):
-        def cycle(i=0):
+        def cycle_logo(i=0):
             colors = ['#8B5CF6', '#A78BFA', '#C4B5FD', '#A78BFA', '#8B5CF6']
             self.logo.config(fg=colors[i % len(colors)])
-            self.root.after(500, lambda: cycle(i + 1))
-        cycle()
+            self.root.after(500, lambda: cycle_logo(i + 1))
+        cycle_logo()
+
+        def pulse_dot(i=0):
+            if self.is_boosted:
+                pulse_colors = [COLORS["green"], "#34D399", COLORS["green"], "#0B6B4F"]
+                self.status_dot.itemconfig(self._dot_id, fill=pulse_colors[i % len(pulse_colors)])
+            else:
+                self.status_dot.itemconfig(self._dot_id, fill=COLORS["text_faint"])
+            self.root.after(500, lambda: pulse_dot(i + 1))
+        pulse_dot()
 
     def show_real_difference_info(self):
-        messagebox.showinfo(
-            "الفرق الحقيقي بيننا وبين ExitLag / LagoFast / Prime",
-            "أدوات زي ExitLag وLagoFast وPrime بتشتغل بتمرير اتصالك عبر شبكة سيرفرات\n"
-            "خاصة بيهم منتشرة حول العالم، عشان تلاقي مسار إنترنت أسرع من اللي بيحدده\n"
-            "مزود الإنترنت بتاعك افتراضيًا (Route Optimization). ده محتاج بنية تحتية\n"
-            "فعلية (سيرفرات مستأجرة عالميًا) - مش حاجة أي برنامج على جهازك بمفرده\n"
-            "يقدر يعملها.\n\n"
-            "البرنامج ده بيشتغل بمبدأ مختلف: بيحسّن جهازك وشبكتك المحلية لأقصى درجة\n"
-            "(TCP، كرت الشبكة، أولويات المعالج، الذاكرة، Game DVR، دقة المؤقت..)،\n"
-            "وده بيقلل التلعثم (Jitter) والحمل اللي سببه جهازك فعليًا، لكنه مش بيغيّر\n"
-            "المسار الفعلي للإنترنت. لو الـ Ping الأساسي عندك متأثر بمسار الشبكة\n"
-            "نفسه، الحل الحقيقي الوحيد هو خدمة زي دي أو VPN خاص بيك على سيرفرات\n"
-            "قريبة من سيرفر اللعبة."
-        )
+        show_info(self.root, "الفرق الحقيقي بيننا وبين ExitLag / LagoFast / Prime",
+            "أدوات زي دي - حتى في باقتها المدفوعة (Premium) - بتمرر اتصالك عبر شبكة سيرفرات "
+            "خاصة بيهم منتشرة حول العالم، عشان تلاقي مسار إنترنت أسرع من اللي بيحدده مزود "
+            "الإنترنت بتاعك افتراضيًا (Route Optimization). ده محتاج بنية تحتية فعلية "
+            "(سيرفرات مستأجرة عالميًا + استضافة شهرية) - مش حاجة أي برنامج على جهازك بمفرده "
+            "يقدر يعملها، ومهما سمّينا وضع فيه 'Extreme' أو 'Premium'.\n\n"
+            "البرنامج ده بيشتغل بمبدأ مختلف: بيحسّن جهازك وشبكتك المحلية لأقصى درجة (TCP، "
+            "كرت الشبكة، أولويات المعالج، الذاكرة، Game DVR، جدولة MMCSS، دقة المؤقت..)، "
+            "وده بيقلل التلعثم (Jitter) والحمل اللي سببه جهازك فعليًا، لكنه مش بيغيّر المسار "
+            "الفعلي للإنترنت. لو الـ Ping الأساسي عندك متأثر بمسار الشبكة نفسه، الحل الحقيقي "
+            "الوحيد هو خدمة زي دي أو VPN خاص بيك على سيرفرات قريبة من سيرفر اللعبة.")
 
     # ==================== تحسينات الشبكة ====================
     def extreme_tcp_optimizations(self):
@@ -778,8 +932,21 @@ class PingZeroExtreme:
             if self.extreme_mode:
                 run("powercfg -setacvalueindex scheme_current sub_processor 893dee8e-2bef-41e0-89c6-b55d0929964c 100")
                 self.log("⚡ (Extreme) تم تثبيت الحد الأدنى للمعالج عند 100%")
+                self.disable_core_parking()
         except Exception as e:
             self.log(f"⚠️ خطأ في خطة الطاقة: {e}")
+
+    def disable_core_parking(self):
+        """(Extreme) بيمنع النواة من "تنويم" أي كور من كروت المعالج، عشان كل كور
+        يكون جاهز فورًا لحظة ما اللعبة تحتاجه - بيفيد خصوصًا في الألعاب اللي
+        بتستخدم أنوية كتير بشكل متقطع. بيترجع تلقائيًا مع خطة الطاقة الأصلية عند الإيقاف."""
+        res = run("powercfg -setacvalueindex scheme_current 54533251-82be-4824-96c1-47b60b740d00 "
+                  "0cc5b647-c1df-4637-891a-dec35c318583 100")
+        run("powercfg -setactive scheme_current")
+        if res.returncode == 0:
+            self.log("🧩 (Extreme) تم تعطيل Core Parking - كل الأنوية شغالة طول الوقت")
+        else:
+            self.log("ℹ️ تعذر تعطيل Core Parking على هذا الجهاز - تم تجاوزه بأمان")
 
     def memory_and_io_boost(self):
         if clear_standby_list():
@@ -816,6 +983,23 @@ class PingZeroExtreme:
         except Exception as e:
             self.log(f"⚠️ خطأ في تعطيل Game DVR: {e}")
 
+    def advanced_fps_scheduler_tweaks(self):
+        """MMCSS Games profile + SystemResponsiveness=0 - تقنية موثقة من مايكروسوفت
+        بتدي أولوية فورية لمعالجة الرسوميات/الصوت بدل ما تستنى دورها زي أي Thread
+        عادي، وده اللي بيقلل الـ micro-stutter فعليًا (نفس اللي ويندوز بيعمله لما
+        اللعبة تسجل نفسها كـ 'Games' task)."""
+        try:
+            base = r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile"
+            self.backup.set_dword("HKLM", base, "SystemResponsiveness", 0)
+            games_path = base + r"\Tasks\Games"
+            self.backup.set_dword("HKLM", games_path, "GPU Priority", 8)
+            self.backup.set_dword("HKLM", games_path, "Priority", 6)
+            self.backup.set_dword("HKLM", games_path, "Scheduling Category", "High", winreg.REG_SZ)
+            self.backup.set_dword("HKLM", games_path, "SFIO Priority", "High", winreg.REG_SZ)
+            self.log("🎯 تم ضبط جدولة MMCSS لمهام الألعاب (GPU/CPU Scheduling) لتقليل الـ micro-stutter")
+        except Exception as e:
+            self.log(f"⚠️ خطأ في ضبط MMCSS: {e}")
+
     def enable_high_timer_resolution(self):
         try:
             result = ctypes.WinDLL("winmm").timeBeginPeriod(1)
@@ -837,9 +1021,9 @@ class PingZeroExtreme:
             self._timer_resolution_active = False
 
     def apply_per_process_tweaks(self):
-        """بتجمع رفع الأولوية + تعطيل Fullscreen Optimizations + سياسة QoS
-        لعمليات اللعبة الشغالة دلوقتي. بتتنادى فورًا بعد التفعيل وكل شوية
-        من monitoring_loop عشان تمسك اللعبة حتى لو اتقفلت وفُتحت تاني."""
+        """بتجمع رفع الأولوية + تعطيل Fullscreen Optimizations + سياسة QoS لعمليات
+        اللعبة الشغالة دلوقتي. بتتنادى فورًا بعد التفعيل وكل شوية من monitoring_loop
+        عشان تمسك اللعبة حتى لو اتقفلت وفُتحت تاني."""
         targets = set()
         if self.target_game in GAME_PROFILES:
             targets.update(GAME_PROFILES[self.target_game]["exe"])
@@ -942,24 +1126,26 @@ class PingZeroExtreme:
                 ping, loss = self.tcp_ping(self.target_ip, self.target_port)
                 self.ping_history.append(ping)
                 cpu = psutil.cpu_percent(interval=None)
-                self.root.after(0, self.update_ui, ping, loss, cpu)
+                ram = psutil.virtual_memory().percent
+                self.root.after(0, self.update_ui, ping, loss, cpu, ram)
             tick += 1
             if tick % 5 == 0:
                 self.apply_per_process_tweaks()
             time.sleep(1)
 
-    def update_ui(self, ping, loss, cpu):
+    def update_ui(self, ping, loss, cpu, ram):
         self.stat_labels["Ping"].config(text=f"{ping} ms",
-                                          fg='#10B981' if ping < 60 else '#F59E0B' if ping < 100 else '#EF4444')
-        self.stat_labels["Packet Loss"].config(text=f"{loss}%", fg='#10B981' if loss == 0 else '#EF4444')
+                                          fg=COLORS["green"] if ping < 60 else COLORS["amber"] if ping < 100 else COLORS["red"])
+        self.stat_labels["Packet Loss"].config(text=f"{loss}%", fg=COLORS["green"] if loss == 0 else COLORS["red"])
         self.stat_labels["حمل المعالج"].config(text=f"{cpu:.0f}%")
+        self.stat_labels["الذاكرة"].config(text=f"{ram:.0f}%")
         if self.ping_history:
             data = list(self.ping_history)
             avg = round(sum(data) / len(data), 1)
             self.stat_labels["Avg Ping"].config(text=f"{avg} ms")
             jitter = round(statistics.pstdev(data), 1) if len(data) >= 2 else 0
             self.stat_labels["Jitter"].config(text=f"{jitter} ms",
-                                                fg='#10B981' if jitter < 10 else '#F59E0B' if jitter < 25 else '#EF4444')
+                                                fg=COLORS["green"] if jitter < 10 else COLORS["amber"] if jitter < 25 else COLORS["red"])
         self.draw_graph()
 
     def draw_graph(self):
@@ -968,17 +1154,31 @@ class PingZeroExtreme:
         if len(data) < 2:
             return
         w, h = self.graph.winfo_width(), self.graph.winfo_height()
-        max_val = max(max(data), 10)
+        pad = 6
+        max_val = max(max(data), 10) * 1.15
         step = w / (len(data) - 1)
+
+        for frac in (0.25, 0.5, 0.75):
+            y = h - frac * (h - pad * 2) - pad
+            self.graph.create_line(0, y, w, y, fill="#2A2A4A", dash=(2, 3))
+
         points = []
         for i, val in enumerate(data):
             x = i * step
-            y = h - (val / max_val * (h - 4)) - 2
+            y = h - (val / max_val * (h - pad * 2)) - pad
             points.extend([x, y])
-        self.graph.create_line(points, fill="#8B5CF6", width=2)
+
+        area = [0, h] + points + [w, h]
+        self.graph.create_polygon(area, fill=COLORS["accent"], stipple="gray25", outline="")
+        self.graph.create_line(points, fill=COLORS["accent"], width=2, smooth=True)
+
         avg = sum(data) / len(data)
-        y_avg = h - (avg / max_val * (h - 4)) - 2
-        self.graph.create_line(0, y_avg, w, y_avg, fill="#F59E0B", dash=(4, 4))
+        y_avg = h - (avg / max_val * (h - pad * 2)) - pad
+        self.graph.create_line(0, y_avg, w, y_avg, fill=COLORS["amber"], dash=(4, 4))
+
+        last_x, last_y = points[-2], points[-1]
+        self.graph.create_oval(last_x - 3, last_y - 3, last_x + 3, last_y + 3,
+                                fill=COLORS["accent"], outline="white")
 
     # ==================== التحكم الرئيسي ====================
     def toggle_boost(self):
@@ -990,7 +1190,7 @@ class PingZeroExtreme:
     def start_boost(self):
         game = self.game_var.get()
         if game not in GAME_PROFILES:
-            messagebox.showwarning("تحذير", "لم يتم العثور على خادم اللعبة")
+            show_info(self.root, "تحذير", "لم يتم العثور على خادم اللعبة")
             return
 
         self.extreme_mode = (self.mode_var.get() == "extreme")
@@ -999,21 +1199,20 @@ class PingZeroExtreme:
         details = ("• TCP وDNS (بعد قياس الأسرع فعليًا) وكرت الشبكة\n"
                    "• خطة الطاقة Ultimate Performance وأولوية اللعبة في المعالج\n"
                    "• تعطيل Xbox Game Bar/Game DVR وFullscreen Optimizations للعبتك\n"
-                   "• ضبط دقة المؤقت (Timer Resolution) لتحسين ثبات الفريمات")
+                   "• جدولة MMCSS للألعاب + ضبط دقة المؤقت (Timer Resolution)")
         if self.extreme_mode:
             details += ("\n• إيقاف مؤقت لتحديثات ويندوز وBITS وSpooler\n"
-                        "• تثبيت المعالج على أقصى سرعة دايمًا\n"
+                        "• تثبيت المعالج على أقصى سرعة + تعطيل Core Parking بالكامل\n"
                         "• سياسة QoS + تعطيل إدارة الطاقة لكرت الشبكة بالكامل")
-        if not messagebox.askyesno(
-                "تأكيد",
-                f"هيتم تطبيق وضع: {mode_txt}\n\nالتغييرات:\n{details}\n\n"
-                "كل حاجة بترجع لوضعها الطبيعي لما تدوس إيقاف. تكمل؟"):
+        if not ask_confirm(self.root, "تأكيد بدء التسريع",
+                            f"هيتم تطبيق وضع: {mode_txt}\n\nالتغييرات:\n{details}\n\n"
+                            "كل حاجة بترجع لوضعها الطبيعي لما تدوس إيقاف. تكمل؟"):
             return
 
         self.target_game = game
         profile = GAME_PROFILES[game]
         self.target_ip, self.target_port = profile["host"], profile["port"]
-        self.btn_boost.config(text="⏳ جاري التطبيق...", state='disabled', bg='#F59E0B')
+        self.btn_boost.config(text="⏳ جاري التطبيق...", state='disabled', bg=COLORS["amber"])
         self.status_var.set("قياس البنق الحالي...")
 
         def worker():
@@ -1034,6 +1233,7 @@ class PingZeroExtreme:
             self.disable_unnecessary_services()
             self.gpu_latency_tweaks()
             self.disable_game_dvr_overlay()
+            self.advanced_fps_scheduler_tweaks()
             self.enable_high_timer_resolution()
             self.apply_per_process_tweaks()
 
@@ -1059,8 +1259,8 @@ class PingZeroExtreme:
         else:
             self.log(f"📊 المقارنة: قبل {self.baseline_ping}ms ← بعد {after}ms - شبه ثابت. "
                       f"الفايدة هنا أساسًا في تقليل التلعثم (Jitter) مش رقم البنق نفسه")
-        self.log("🎮 تحسينات الـ FPS (Game DVR، Fullscreen Optimizations، دقة المؤقت) بتأثيرها على "
-                  "ثبات الفريم مش على رقم الـ Ping، فمتقلقش لو مش شايفها في المقارنة دي")
+        self.log("🎮 تحسينات الـ FPS (MMCSS، Game DVR، Fullscreen Optimizations، دقة المؤقت) بتأثيرها "
+                  "على ثبات الفريم مش على رقم الـ Ping، فمتقلقش لو مش شايفها في المقارنة دي")
 
     def on_boost_started(self):
         self.btn_boost.config(text="⏹ إيقاف التسريع", state='normal', bg='#EF4444', activebackground='#DC2626')
@@ -1085,7 +1285,7 @@ class PingZeroExtreme:
         self.graph.delete("all")
         for lbl in self.stat_labels.values():
             lbl.config(text="--")
-        self.btn_boost.config(text="⚡ بدء التسريع الأقصى", state='normal', bg='#8B5CF6')
+        self.btn_boost.config(text="⚡ بدء التسريع الأقصى", state='normal', bg=COLORS["accent"])
         self.status_var.set("تم إيقاف التسريع – جميع الإعدادات مستعادة")
         self.log("🔄 تم استعادة إعدادات النظام والشبكة وكرت الشبكة والخدمات بالكامل.")
 
