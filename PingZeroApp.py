@@ -1,38 +1,33 @@
 """
-PingZero Extreme v4 - Network & System Booster لتقليل اللاق ورفع أداء الألعاب
+PingZero Extreme v5 - Network & System Booster لتقليل اللاق ورفع أداء الألعاب
 ================================================================================
-نسخة v4: نفس فلسفة v2/v3 تمامًا (نسخ احتياطي حقيقي لأي تغيير - بيترجع لطبيعته حتى
-لو البرنامج قفل فجأة - وأرقام حقيقية بدل الوهمية)، مع واجهة معاد تصميمها بالكامل
-+ مجموعة تحسينات إضافية حقيقية تستهدف ثبات الفريمات تحديدًا:
+نسخة v5: نفس فلسفة v2/v3/v4 (نسخ احتياطي حقيقي لأي تغيير - بيترجع لطبيعته حتى
+لو البرنامج قفل فجأة - وأرقام حقيقية بدل الوهمية)، مع دفعة تحسينات محلية حقيقية
+إضافية بتستهدف سبب شائع وحقيقي لارتفاع/تذبذب البنق بيتنسى غالبًا: الازدحام جوه
+جهازك وشبكتك المحلية نفسها (Bufferbloat)، مش بس مسار السيرفر.
 
-جديد في v4:
-  • واجهة معاد تصميمها بالكامل: كروت متسقة، تبديل وضع (Safe/Extreme) بشكل أنيق
-    بديل الـ Radiobutton الافتراضي، حوارات تأكيد/معلومات مصممة بنفس ثيم البرنامج
-    بديل messagebox الافتراضي، رسم بياني بخطوط شبكة مرجعية وتعبئة تحت المنحنى
-    ونقطة توضح آخر قراءة، بطاقة استهلاك الذاكرة (RAM) جنب باقي القياسات الحقيقية،
-    ثيم غامق موحّد حتى على الـ Combobox.
-  • جدولة MMCSS لمهام الألعاب (GPU Priority / Scheduling Category / SFIO
-    Priority) + SystemResponsiveness=0: نفس الآلية اللي ويندوز نفسه بيستخدمها
-    عشان يدي الأولوية الفورية لمعالجة الرسوميات/الصوت بدل ما تستنى دورها زي أي
-    Thread عادي، وده بيقلل الـ micro-stutter فعليًا (تقنية موثقة من مايكروسوفت،
-    مش اختراع).
-  • (Extreme) تعطيل Core Parking بالكامل: كل أنوية المعالج تفضل شغالة بدل ما
-    تتنيّم وتحتاج وقت تصحى فجأة لحظة ما اللعبة تحتاجها.
+جديد في v5:
+  • TCP ACK لكل كارت شبكة على حدة (Interfaces\\{GUID}) مش بس الإعداد العام -
+    بعض نسخ ويندوز بتقرا القيمة لكل كارت وتتجاهل العام، فده بيضمن إن تحسين TCP
+    الأساسي بيتطبق فعليًا مش بس مكتوب في الريجستري من غير تأثير حقيقي.
+  • (Extreme) تقييد باندويدث البرامج المعروف إنها بتستهلك في الخلفية (مزامنة
+    سحابية، لانشرز ألعاب، تحديثات) عبر QoS - بيفيد فعليًا لو سبب تذبذب البنق
+    عندك ازدحام محلي (حد تاني بيستريم في البيت، مزامنة شغالة في الخلفية..).
+  • (Extreme) إيقاف خدمة Delivery Optimization (مشاركة تحديثات ويندوز P2P مع
+    مستخدمين تانيين على الإنترنت في الخلفية).
+  • تنبيه تلقائي لو أنت متوصل واي فاي بدل كابل (Ethernet بيقلل الـ Jitter
+    بشكل ملموس - نصيحة حقيقية، مش تحسين كود).
 
-⚠️ حقيقة مهمة (زي ما كانت في v2 وv3 بالظبط، ولسه صحيحة 100% مهما طورنا الواجهة
-أو التحسينات المحلية أكتر - وده بالظبط سبب إن الإصدار ده لسه من غير "تحسين مسار
-الشبكة" زي ExitLag/LagoFast):
-تحسينات الريجستري وكرت الشبكة ودقة المؤقت وGame DVR وMMCSS بتقلل الاحتكاك المحلي
-(Jitter وحمل النظام) وبتفيد ثبات الـ FPS فعليًا، لكنها ملهاش أي تأثير على المسار
-الفعلي للشبكة بين جهازك وسيرفر اللعبة. أدوات زي ExitLag أو LagoFast أو Prime -
-حتى في الباقة المدفوعة (Premium) بتاعتهم - بتشتغل بمبدأ مختلف تمامًا: بتمرر
-اتصالك عبر شبكة سيرفراتها هي المنتشرة حول العالم لتلاقي أسرع مسار (Route
-Optimization)، وده محتاج بنية تحتية عالمية فعلية (سيرفرات مستأجرة في مناطق كتير
-+ اشتراك استضافة شهري) مش حاجة سكريبت محلي شغال على جهازك يقدر يعملها مهما
-"طورناه" أو حتى لو سمّيناه "Premium". أي نسخة من الكود ده تدّعي إنها بتعمل Route
-Optimization من غير سيرفرات فعلية بتشتغل عليها بتكون بتوعد بحاجة مش حقيقية عمدًا،
-وده اللي البرنامج ده مصمم إنه ميعملوش. البرنامج ده بيدّيك أقصى استفادة ممكنة من
-جهازك وشبكتك المحلية، وبيقيس الفرق الحقيقي بدل ما يوعد بأرقام وهمية.
+⚠️ نفس الحقيقة اللي كانت في v2 وv3 وv4 بالظبط، ولازم تتقال بصراحة حتى لو
+عدد التحسينات كتر كتير: مفيش أي عدد "تحسينات" أو "قوة كود" يقدر يضمن رقم بنق
+معين (زي "من 100 لـ 50") لأي حد - رقم البنق الأساسي بيتحدد بالمسافة الفعلية
+وعدد القفزات (Hops) في الراوتينج بينك وبين سيرفر اللعبة، وده برا سيطرة أي
+سكريبت شغال على جهازك مهما "طورناه". اللي فعلاً بيحصل هنا: تقليل التلعثم
+(Jitter) والقفزات المفاجئة اللي سببها جهازك أو شبكتك المحلية (ومعاها v5 بقت
+تستهدف الازدحام المحلي فعليًا عبر تقييد الباندويدث)، مش تغيير المسار الفعلي
+للإنترنت. لو عايز تحسين مضمون في رقم البنق الأساسي نفسه، الحل الوحيد لسه هو
+خدمة route optimization حقيقية (ExitLag/LagoFast) أو VPN خاص بيك على سيرفرات
+قريبة من سيرفر اللعبة - وده محتاج بنية تحتية عالمية فعلية مش سطور كود إضافية.
 
 المتطلبات: تشغيل كأدمن (Run as Administrator) + pip install psutil
 """
@@ -50,7 +45,7 @@ from queue import Queue, Empty
 # ============================================================
 # إعدادات عامة
 # ============================================================
-APP_TITLE = "PingZero Extreme v4 – Network, System & FPS Booster"
+APP_TITLE = "PingZero Extreme v5 – Network, System & FPS Booster"
 BACKUP_DIR = Path(os.environ.get("LOCALAPPDATA", os.path.expanduser("~"))) / "PingZeroExtreme"
 BACKUP_FILE = BACKUP_DIR / "session_backup.json"
 FSE_LAYER_PATH = r"Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
@@ -625,7 +620,7 @@ class PingZeroExtreme:
         name_row.pack(anchor='e')
         tk.Label(name_row, text="PingZero Extreme", font=("Segoe UI", 20, "bold"),
                  bg=COLORS["bg"], fg="white").pack(side='right')
-        tk.Label(name_row, text=" v4", font=("Segoe UI", 11, "bold"),
+        tk.Label(name_row, text=" v5", font=("Segoe UI", 11, "bold"),
                  bg=COLORS["bg"], fg=COLORS["accent"]).pack(side='right')
         tk.Label(title_box, text="Local Tweaks · Real Metrics · FPS Boost · Safe Restore",
                  font=("Segoe UI", 9), bg=COLORS["bg"], fg=COLORS["text_dim"]).pack(anchor='e')
@@ -723,10 +718,10 @@ class PingZeroExtreme:
             self.mode_buttons[key] = b
         set_mode("safe")
 
-        tk.Label(f2, text="Extreme بيوقف تحديثات ويندوز وBITS وSpooler مؤقتًا، يثبّت المعالج على أقصى سرعة\n"
-                          "طول الوقت، يعطّل Core Parking بالكامل، ويضيف QoS + تعطيل تام لإدارة الطاقة بكرت\n"
-                          "الشبكة - أقوى، بس استهلاك كهرباء/حرارة أعلى (خصوصًا لابتوب). كل الأوضاع بتشمل\n"
-                          "جدولة MMCSS للألعاب، تعطيل Game DVR وFullscreen Optimizations، وضبط دقة المؤقت.",
+        tk.Label(f2, text="Extreme بيوقف تحديثات ويندوز وBITS وSpooler وDelivery Optimization مؤقتًا،\n"
+                          "يثبّت المعالج على أقصى سرعة، يعطّل Core Parking، ويقيّد باندويدث برامج الخلفية\n"
+                          "(مزامنة، لانشرز) لصالح اللعبة - أقوى، بس استهلاك كهرباء/حرارة أعلى (لابتوب).\n"
+                          "كل الأوضاع بتشمل TCP لكل كارت شبكة، MMCSS، تعطيل Game DVR وFSE، ودقة المؤقت.",
                  font=("Segoe UI", 8), bg=COLORS["card"], fg=COLORS["text_dim"],
                  wraplength=340, justify='right').pack(anchor='e', padx=12, pady=(0, 10))
 
@@ -848,16 +843,17 @@ class PingZeroExtreme:
             "(سيرفرات مستأجرة عالميًا + استضافة شهرية) - مش حاجة أي برنامج على جهازك بمفرده "
             "يقدر يعملها، ومهما سمّينا وضع فيه 'Extreme' أو 'Premium'.\n\n"
             "البرنامج ده بيشتغل بمبدأ مختلف: بيحسّن جهازك وشبكتك المحلية لأقصى درجة (TCP، "
-            "كرت الشبكة، أولويات المعالج، الذاكرة، Game DVR، جدولة MMCSS، دقة المؤقت..)، "
-            "وده بيقلل التلعثم (Jitter) والحمل اللي سببه جهازك فعليًا، لكنه مش بيغيّر المسار "
-            "الفعلي للإنترنت. لو الـ Ping الأساسي عندك متأثر بمسار الشبكة نفسه، الحل الحقيقي "
-            "الوحيد هو خدمة زي دي أو VPN خاص بيك على سيرفرات قريبة من سيرفر اللعبة.")
+            "كرت الشبكة، أولويات المعالج، الذاكرة، Game DVR، جدولة MMCSS، دقة المؤقت، وتقييد "
+            "باندويدث برامج الخلفية في وضع Extreme)، وده بيقلل التلعثم (Jitter) وازدحامك المحلي "
+            "فعليًا، لكنه مش بيغيّر المسار الفعلي للإنترنت. لو الـ Ping الأساسي عندك متأثر بمسار "
+            "الشبكة نفسه (مش ازدحام محلي)، الحل الحقيقي الوحيد هو خدمة زي دي أو VPN خاص بيك على "
+            "سيرفرات قريبة من سيرفر اللعبة.")
 
     # ==================== تحسينات الشبكة ====================
     def extreme_tcp_optimizations(self):
         try:
             path = r"SYSTEM\CurrentControlSet\Services\Tcpip\Parameters"
-            for name, val in [("TcpNoDelay", 1), ("TcpAckFrequency", 0), ("TcpDelAckTicks", 0),
+            for name, val in [("TcpNoDelay", 1), ("TcpAckFrequency", 1), ("TcpDelAckTicks", 0),
                                ("Tcp1323Opts", 0), ("EnableWsd", 0), ("EnableAutoTuning", 0)]:
                 self.backup.set_dword("HKLM", path, name, val)
             self.log("✅ تم ضبط TCP (Nagle=Off, ACK فوري, Timestamps=Off)")
@@ -880,6 +876,42 @@ class PingZeroExtreme:
         ]
         ok = sum(1 for c in cmds if run(c).returncode == 0)
         self.log(f"✅ تم تطبيق {ok}/{len(cmds)} من أوامر netsh")
+
+    def per_interface_tcp_tweaks(self):
+        """(v5) نفس منطق TcpAckFrequency/TCPNoDelay بس على مستوى كل كارت شبكة
+        متصل لوحده (Interfaces\\{GUID}) مش بس المفتاح العام. بعض نسخ/تعريفات
+        ويندوز بتقرا القيمة لكل كارت وتتجاهل العام تمامًا، فده بيضمن إن التحسين
+        فعليًا بيتطبق مش بس مكتوب من غير تأثير."""
+        try:
+            res = run_ps("(Get-NetAdapter | Where-Object {$_.Status -eq 'Up'}).InterfaceGuid")
+            guids = [l.strip().strip('{}') for l in res.stdout.splitlines() if l.strip()]
+            applied = 0
+            for guid in guids:
+                path = rf"SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\{{{guid}}}"
+                try:
+                    self.backup.set_dword("HKLM", path, "TcpAckFrequency", 1)
+                    self.backup.set_dword("HKLM", path, "TCPNoDelay", 1)
+                    applied += 1
+                except Exception:
+                    pass
+            if applied:
+                self.log(f"✅ تم ضبط TCP ACK لكل كارت شبكة على حدة ({applied} كارت) - مش بس الإعداد العام")
+            else:
+                self.log("ℹ️ محدّش كارت شبكة استجاب لضبط TCP لكل كارت - الإعداد العام لسه شغال")
+        except Exception as e:
+            self.log(f"⚠️ خطأ في ضبط TCP لكل كارت: {e}")
+
+    def check_connection_type_tip(self):
+        """(v5) نصيحة حقيقية مش تحسين كود: لو أنت متوصل واي فاي، الكابل بيقلل
+        الـ Jitter بشكل ملموس لأنه مش عرضة لتداخل الإشارة زي الواي فاي."""
+        try:
+            res = run_ps("(Get-NetAdapter | Where-Object {$_.Status -eq 'Up'}).InterfaceDescription")
+            desc = " ".join(res.stdout.splitlines()).lower()
+            if any(k in desc for k in ("wireless", "wi-fi", "wifi", "802.11")) and "ethernet" not in desc:
+                self.log("💡 نصيحة: أنت متوصل واي فاي - سلك Ethernet بيقلل الـ Jitter والتذبذب "
+                          "بشكل ملموس لأنه مش عرضة لتداخل الإشارة")
+        except Exception:
+            pass
 
     def extreme_adapter_tweaks(self):
         adapters = get_active_adapters()
@@ -963,7 +995,7 @@ class PingZeroExtreme:
 
     def disable_unnecessary_services(self):
         safe_services = ["SysMain", "DiagTrack", "WSearch"]
-        extreme_services = ["BITS", "wuauserv", "Spooler"]
+        extreme_services = ["BITS", "wuauserv", "Spooler", "DoSvc"]
         targets = safe_services + (extreme_services if self.extreme_mode else [])
         for svc in targets:
             if self.backup.stop_service(svc):
@@ -1078,6 +1110,43 @@ class PingZeroExtreme:
 
         if boosted:
             self.log(f"⬆️ تم رفع أولوية {boosted} عملية متعلقة باللعبة (CPU+I/O+Affinity)")
+
+    def throttle_background_apps(self):
+        """(Extreme, v5) بتحدد أشهر البرامج اللي بتستهلك باندويدث في الخلفية
+        (مزامنة سحابية، لانشرز ألعاب، تحديثات) وبتحط سقف سرعة ليها عبر QoS -
+        مش بتوقفها، بس بتمنعها تزاحم اللعبة على الباندويدث المحلي. ده بيفيد
+        فعليًا في حالة الـ Bufferbloat (لما جهازك أو الراوتر يبقوا مزنوقين
+        بيانات، البنق بيرتفع لحد ما الطابور يفضى - سبب حقيقي وشائع لارتفاع
+        وتذبذب البنق، مش بس مسار السيرفر). لو مفيش من البرامج دي شغال، مفيش
+        حاجة هتتغير."""
+        bg_targets = ["OneDrive.exe", "Dropbox.exe", "steam.exe", "EpicGamesLauncher.exe",
+                      "Battle.net.exe", "MicrosoftEdgeUpdate.exe", "GoogleUpdate.exe",
+                      "OneDriveSetup.exe", "backgroundTransferHost.exe"]
+        running = {p.info['name'] for p in psutil.process_iter(['name']) if p.info.get('name')}
+        throttled = 0
+        for name in bg_targets:
+            if name not in running:
+                continue
+            policy_name = f"PingZero_Throttle_{name}"
+            script = (
+                f"Remove-NetQosPolicy -Name {ps_quote(policy_name)} -PolicyStore ActiveStore "
+                f"-Confirm:$false -ErrorAction SilentlyContinue | Out-Null\n"
+                f"New-NetQosPolicy -Name {ps_quote(policy_name)} -AppPathNameMatchCondition {ps_quote(name)} "
+                f"-ThrottleRateActionBitsPerSecond 3000000 -NetworkProfile All -PolicyStore ActiveStore "
+                f"-ErrorAction SilentlyContinue | Out-Null\n"
+                f"if (Get-NetQosPolicy -Name {ps_quote(policy_name)} -PolicyStore ActiveStore "
+                f"-ErrorAction SilentlyContinue) {{ Write-Output 'OK' }}"
+            )
+            res = run_ps(script)
+            if "OK" in res.stdout:
+                self.backup.data["qos_policies"].append(policy_name)
+                self.backup._persist()
+                throttled += 1
+        if throttled:
+            self.log(f"🚦 (Extreme) تم تقييد باندويدث {throttled} برنامج خلفية (تحديثات/مزامنة) لصالح "
+                      "اللعبة - بيفيد لو سبب تذبذب البنق عندك ازدحام محلي")
+        else:
+            self.log("ℹ️ مفيش برامج خلفية معروفة شغالة دلوقتي تحتاج تقييد باندويدث")
 
     def gpu_latency_tweaks(self):
         gpus = find_gpu_registry_keys()
@@ -1196,14 +1265,15 @@ class PingZeroExtreme:
         self.extreme_mode = (self.mode_var.get() == "extreme")
         self.custom_exe_name = self.custom_exe_var.get().strip()
         mode_txt = "Extreme (أقصى قوة)" if self.extreme_mode else "آمن"
-        details = ("• TCP وDNS (بعد قياس الأسرع فعليًا) وكرت الشبكة\n"
+        details = ("• TCP لكل كارت شبكة على حدة وDNS (بعد قياس الأسرع فعليًا)\n"
                    "• خطة الطاقة Ultimate Performance وأولوية اللعبة في المعالج\n"
                    "• تعطيل Xbox Game Bar/Game DVR وFullscreen Optimizations للعبتك\n"
                    "• جدولة MMCSS للألعاب + ضبط دقة المؤقت (Timer Resolution)")
         if self.extreme_mode:
-            details += ("\n• إيقاف مؤقت لتحديثات ويندوز وBITS وSpooler\n"
+            details += ("\n• إيقاف مؤقت لتحديثات ويندوز وBITS وSpooler وDelivery Optimization\n"
                         "• تثبيت المعالج على أقصى سرعة + تعطيل Core Parking بالكامل\n"
-                        "• سياسة QoS + تعطيل إدارة الطاقة لكرت الشبكة بالكامل")
+                        "• سياسة QoS + تقييد باندويدث برامج الخلفية لصالح اللعبة\n"
+                        "• تعطيل إدارة الطاقة لكرت الشبكة بالكامل")
         if not ask_confirm(self.root, "تأكيد بدء التسريع",
                             f"هيتم تطبيق وضع: {mode_txt}\n\nالتغييرات:\n{details}\n\n"
                             "كل حاجة بترجع لوضعها الطبيعي لما تدوس إيقاف. تكمل؟"):
@@ -1226,6 +1296,8 @@ class PingZeroExtreme:
                 self.log(f"📏 متوسط البنق قبل التفعيل: {self.baseline_ping} ms")
 
             self.extreme_tcp_optimizations()
+            self.per_interface_tcp_tweaks()
+            self.check_connection_type_tip()
             self.extreme_adapter_tweaks()
             self.set_fastest_dns()
             self.ultimate_performance_plan()
@@ -1236,6 +1308,8 @@ class PingZeroExtreme:
             self.advanced_fps_scheduler_tweaks()
             self.enable_high_timer_resolution()
             self.apply_per_process_tweaks()
+            if self.extreme_mode:
+                self.throttle_background_apps()
 
             psutil.cpu_percent(interval=None)
             self.is_boosted = True
@@ -1261,6 +1335,10 @@ class PingZeroExtreme:
                       f"الفايدة هنا أساسًا في تقليل التلعثم (Jitter) مش رقم البنق نفسه")
         self.log("🎮 تحسينات الـ FPS (MMCSS، Game DVR، Fullscreen Optimizations، دقة المؤقت) بتأثيرها "
                   "على ثبات الفريم مش على رقم الـ Ping، فمتقلقش لو مش شايفها في المقارنة دي")
+        if self.extreme_mode:
+            self.log("🚦 لو كان عندك ازدحام محلي (برامج خلفية بتاكل باندويدث)، تقييد الـ Extreme ده "
+                      "أقرب حاجة هنا ممكن تشوف أثرها فعليًا في رقم البنق - غير كده، السقف الأساسي "
+                      "بيفضل المسافة والراوتينج لسيرفر اللعبة")
 
     def on_boost_started(self):
         self.btn_boost.config(text="⏹ إيقاف التسريع", state='normal', bg='#EF4444', activebackground='#DC2626')
